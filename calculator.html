@@ -1,1 +1,110 @@
 
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คำนวณค่าส่ง | ThaiGo Air Express</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f1f5f9;font-family:Arial,sans-serif;color:#172b4d}
+.wrap{max-width:520px;margin:25px auto;padding:16px}
+.card{background:white;border-radius:18px;padding:24px;box-shadow:0 5px 24px #0f172a12}
+.brand{text-align:center;color:#17365d;font-size:27px;font-weight:bold}
+.sub{text-align:center;color:#64748b;margin:8px 0 24px}
+label{display:block;font-weight:bold;margin:18px 0 8px}
+select{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:9px;font-size:16px;background:white}
+.result{margin-top:22px;padding:20px;background:#eff6ff;border-radius:12px;text-align:center}
+.price{font-size:30px;font-weight:bold;color:#17365d;margin:10px 0}
+button{width:100%;padding:14px;border:0;border-radius:9px;background:#17365d;color:white;font-size:16px;font-weight:bold;margin-top:18px;cursor:pointer}
+.note{font-size:13px;color:#64748b;line-height:1.7;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="brand">📦 ThaiGo Air Express</div>
+    <div class="sub">ระบบคำนวณค่าจัดส่งพัสดุไปอเมริกา</div>
+
+    <label for="service">1. เลือกบริการ</label>
+    <select id="service">
+      <option value="normal">เรทปกติ (7–20 วัน) — สูงสุด 6 กก.</option>
+      <option value="express">เรทด่วน (5–7 วัน) — 1–20 กก.</option>
+    </select>
+
+    <label for="weight">2. เลือกน้ำหนักพัสดุ</label>
+    <select id="weight"></select>
+
+    <div class="result">
+      <div>ราคาจัดส่งเบื้องต้น</div>
+      <div class="price" id="price">กรุณาเลือกบริการ</div>
+      <div id="delivery">สหรัฐอเมริกา 🇺🇸</div>
+    </div>
+
+    <button onclick="contactAdmin()">สอบถาม / จองส่งพัสดุ</button>
+
+    <div class="note">
+      • ระยะเวลาจัดส่งเป็นเวลาโดยประมาณ<br>
+      • ราคาขึ้นอยู่กับเงื่อนไขและประเภทสินค้า<br>
+      • กรุณายืนยันราคากับแอดมินก่อนส่งพัสดุ
+    </div>
+  </div>
+</div>
+
+<script>
+// ใส่ "ราคาขายลูกค้า" ของ ThaiGo ที่รวมต้นทุนและกำไรแล้ว
+// อย่าใส่ราคาต้นทุนพาร์ทเนอร์ในเว็บไซต์สาธารณะ
+const sellingPrices = {
+  normal: {
+    1: null, 2: null, 3: null,
+    4: null, 5: null, 6: null
+  },
+  express: {
+    1: null, 2: null, 3: null, 4: null, 5: null,
+    6: null, 7: null, 8: null, 9: null, 10: null,
+    11: null, 12: null, 13: null, 14: null, 15: null,
+    16: null, 17: null, 18: null, 19: null, 20: null
+  }
+};
+
+const service = document.getElementById("service");
+const weight = document.getElementById("weight");
+const price = document.getElementById("price");
+const delivery = document.getElementById("delivery");
+
+function updateWeights() {
+  const max = service.value === "normal" ? 6 : 20;
+  weight.innerHTML = "";
+  for (let i = 1; i <= max; i++) {
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = i + " กิโลกรัม";
+    weight.appendChild(option);
+  }
+  updatePrice();
+}
+
+function updatePrice() {
+  const amount = sellingPrices[service.value][weight.value];
+  price.textContent = Number.isFinite(amount)
+    ? amount.toLocaleString("th-TH") + " บาท"
+    : "สอบถามราคา";
+  delivery.textContent = service.value === "normal"
+    ? "เรทปกติ • 7–20 วัน • สหรัฐอเมริกา 🇺🇸"
+    : "เรทด่วน • 5–7 วัน • สหรัฐอเมริกา 🇺🇸";
+}
+
+function contactAdmin() {
+  window.open(
+    "https://line.me/R/ti/p/@710rkcan",
+    "_blank"
+  );
+}
+
+service.addEventListener("change", updateWeights);
+weight.addEventListener("change", updatePrice);
+updateWeights();
+</script>
+</body>
+</html>
+
