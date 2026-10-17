@@ -24,49 +24,65 @@ button{width:100%;padding:14px;border:0;border-radius:9px;background:#17365d;col
 <div class="wrap">
   <div class="card">
     <div class="brand">📦 ThaiGo Air Express</div>
-    <div class="sub">ระบบคำนวณค่าจัดส่งพัสดุไปอเมริกา</div>
+    <div class="sub">ระบบคำนวณค่าจัดส่งระหว่างประเทศ</div>
 
-    <label for="service">1. เลือกบริการ</label>
+    <label for="country">1. เลือกประเทศปลายทาง</label>
+    <select id="country">
+      <option value="usa">🇺🇸 สหรัฐอเมริกา (USA)</option>
+      <option value="australia">🇦🇺 ออสเตรเลีย</option>
+      <option value="canada">🇨🇦 แคนาดา</option>
+      <option value="hongkong">🇭🇰 ฮ่องกง</option>
+      <option value="newzealand">🇳🇿 นิวซีแลนด์</option>
+      <option value="singapore">🇸🇬 สิงคโปร์</option>
+      <option value="taiwan">🇹🇼 ไต้หวัน</option>
+    </select>
+
+    <label for="service">2. เลือกบริการ</label>
     <select id="service">
       <option value="normal">เรทปกติ (7–20 วัน) — สูงสุด 6 กก.</option>
       <option value="express">เรทด่วน (5–7 วัน) — 1–20 กก.</option>
     </select>
 
-    <label for="weight">2. เลือกน้ำหนักพัสดุ</label>
+    <label for="weight">3. เลือกน้ำหนักพัสดุ</label>
     <select id="weight"></select>
 
     <div class="result">
-      <div>ราคาจัดส่งเบื้องต้น</div>
-      <div class="price" id="price">กรุณาเลือกบริการ</div>
-      <div id="delivery">สหรัฐอเมริกา 🇺🇸</div>
+      <div>ราคาจัดส่ง</div>
+      <div class="price" id="price">กำลังโหลด...</div>
+      <div id="delivery"></div>
     </div>
 
     <button onclick="contactAdmin()">สอบถาม / จองส่งพัสดุ</button>
 
     <div class="note">
       • ระยะเวลาจัดส่งเป็นเวลาโดยประมาณ<br>
-      • ราคาขึ้นอยู่กับเงื่อนไขและประเภทสินค้า<br>
-      • กรุณายืนยันราคากับแอดมินก่อนส่งพัสดุ
+      • ราคาที่แสดงเป็นราคาอ้างอิง กรุณายืนยันกับแอดมินก่อนส่ง<br>
+      • ประเทศที่ยังไม่มีตารางราคา กรุณาติดต่อแอดมิน
     </div>
   </div>
 </div>
 
 <script>
-// ใส่ "ราคาขายลูกค้า" ของ ThaiGo ที่รวมต้นทุนและกำไรแล้ว
-// อย่าใส่ราคาต้นทุนพาร์ทเนอร์ในเว็บไซต์สาธารณะ
+// ตารางราคาที่ได้รับมา สำหรับสหรัฐอเมริกา
+// ก่อนเปิดให้ลูกค้าใช้งานจริง ให้ยืนยันว่าตัวเลขเหล่านี้
+// เป็นราคาขายลูกค้าของ ThaiGo ไม่ใช่ต้นทุนพาร์ทเนอร์
 const sellingPrices = {
-  normal: {
-    1: null, 2: null, 3: null,
-    4: null, 5: null, 6: null
-  },
-  express: {
-    1: null, 2: null, 3: null, 4: null, 5: null,
-    6: null, 7: null, 8: null, 9: null, 10: null,
-    11: null, 12: null, 13: null, 14: null, 15: null,
-    16: null, 17: null, 18: null, 19: null, 20: null
+  usa: {
+    normal: {
+      1: 1858.14, 2: 2642.45, 3: 3289.80,
+      4: 3942.50, 5: 4670.10, 6: 5419.10
+    },
+    express: {
+      1: 3122, 2: 3646, 3: 4171, 4: 4794, 5: 5334,
+      6: 6390, 7: 7173, 8: 7654, 9: 8133, 10: 8799,
+      11: 9139, 12: 9543, 13: 10129, 14: 10469,
+      15: 10809, 16: 11019, 17: 11229, 18: 11469,
+      19: 12149, 20: 12499
+    }
   }
 };
 
+const country = document.getElementById("country");
 const service = document.getElementById("service");
 const weight = document.getElementById("weight");
 const price = document.getElementById("price");
@@ -75,36 +91,49 @@ const delivery = document.getElementById("delivery");
 function updateWeights() {
   const max = service.value === "normal" ? 6 : 20;
   weight.innerHTML = "";
+
   for (let i = 1; i <= max; i++) {
     const option = document.createElement("option");
     option.value = i;
     option.textContent = i + " กิโลกรัม";
     weight.appendChild(option);
   }
+
   updatePrice();
 }
 
 function updatePrice() {
-  const amount = sellingPrices[service.value][weight.value];
-  price.textContent = Number.isFinite(amount)
-    ? amount.toLocaleString("th-TH") + " บาท"
-    : "สอบถามราคา";
-  delivery.textContent = service.value === "normal"
-    ? "เรทปกติ • 7–20 วัน • สหรัฐอเมริกา 🇺🇸"
-    : "เรทด่วน • 5–7 วัน • สหรัฐอเมริกา 🇺🇸";
+  const countryCode = country.value;
+  const amount = sellingPrices[countryCode]?.[service.value]?.[weight.value];
+
+  if (Number.isFinite(amount)) {
+    price.textContent = amount.toLocaleString("th-TH", {
+      maximumFractionDigits: 2
+    }) + " บาท";
+  } else {
+    price.textContent = "สอบถามราคา";
+  }
+
+  const countryName = country.options[country.selectedIndex].text;
+
+  delivery.textContent =
+    countryCode !== "usa"
+      ? countryName + " • กรุณาสอบถามราคา"
+      : countryName + " • " +
+        (service.value === "normal"
+          ? "เรทปกติ 7–20 วัน"
+          : "เรทด่วน 5–7 วัน");
 }
 
 function contactAdmin() {
-  window.open(
-    "https://line.me/R/ti/p/@710rkcan",
-    "_blank"
-  );
+  window.open("https://line.me/R/ti/p/@710rkcan", "_blank");
 }
 
+country.addEventListener("change", updatePrice);
 service.addEventListener("change", updateWeights);
 weight.addEventListener("change", updatePrice);
+
 updateWeights();
 </script>
 </body>
 </html>
-
