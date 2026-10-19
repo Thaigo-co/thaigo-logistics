@@ -1,4 +1,5 @@
- <script>
+
+<script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxI64cbohyMo_ZXNk173k18nJIJcBRZvfECZY7tnrkltazJN22rwAGCkGdcLJOiXNzC/exec";
 
 let prices = {};
@@ -11,27 +12,31 @@ const delivery = document.getElementById("delivery");
 
 async function loadPrices() {
   price.textContent = "กำลังโหลดราคา...";
+
   try {
     const response = await fetch(API_URL);
     if (!response.ok) throw new Error("โหลดราคาไม่สำเร็จ");
 
     const data = await response.json();
+
     if (data.error || !data.prices) {
       throw new Error(data.error || "ไม่พบข้อมูลราคา");
     }
 
     prices = data.prices;
     updatePrice();
+
   } catch (error) {
     console.error("Price API error:", error);
     price.textContent = "โหลดราคาไม่สำเร็จ";
-    delivery.textContent = "กรุณารีเฟรชหน้าเว็บ หรือติดต่อแอดมินทาง LINE";
+    delivery.textContent = "กรุณาติดต่อแอดมินทาง LINE";
   }
 }
 
 function updateWeights() {
   const max = service.value === "normal" ? 6 : 20;
   const previousWeight = Number(weight.value) || 1;
+
   weight.innerHTML = "";
 
   for (let i = 1; i <= max; i++) {
@@ -47,7 +52,11 @@ function updateWeights() {
 
 function updatePrice() {
   const countryCode = country.value;
-  const amount = prices[countryCode]?.[service.value]?.[weight.value];
+  const selectedService = service.value;
+  const selectedWeight = weight.value;
+
+  const amount =
+    prices[countryCode]?.[selectedService]?.[selectedWeight];
 
   if (typeof amount === "number" && Number.isFinite(amount)) {
     price.textContent = amount.toLocaleString("th-TH", {
@@ -58,30 +67,57 @@ function updatePrice() {
     price.textContent = "สอบถามราคา";
   }
 
-  const countryName = country.options[country.selectedIndex].text;
+  const countryName =
+    country.options[country.selectedIndex]?.text || countryCode;
+
   delivery.textContent = countryCode !== "usa"
     ? countryName + " · ติดต่อแอดมินเพื่อตรวจสอบราคา"
     : countryName + " · " +
-      (service.value === "normal" ? "เรทปกติ 7–20 วัน" : "เรทด่วน 5–7 วัน");
+      (selectedService === "normal"
+        ? "เรทปกติ 7–20 วัน"
+        : "เรทด่วน 5–7 วัน");
 }
 
 function contactAdmin() {
-  window.open("https://line.me/R/ti/p/@710rkcan", "_blank", "noopener");
+  window.open(
+    "https://line.me/R/ti/p/@710rkcan",
+    "_blank",
+    "noopener"
+  );
 }
 
 function sendParcel() {
+  const countryCode = country.value;
+  const selectedService = service.value;
+  const selectedWeight = weight.value;
+
+  const amount =
+    prices[countryCode]?.[selectedService]?.[selectedWeight];
+
+  if (typeof amount !== "number" || !Number.isFinite(amount)) {
+    alert("ยังไม่มีราคาสำหรับตัวเลือกนี้ กรุณาติดต่อแอดมิน");
+    return;
+  }
+
   const url = new URL("create-order.html", window.location.href);
-  url.searchParams.set("country", country.value);
-  url.searchParams.set("service", service.value);
-  url.searchParams.set("weight", weight.value);
+
+  url.searchParams.set("country", countryCode);
+  url.searchParams.set("service", selectedService);
+  url.searchParams.set("weight", selectedWeight);
+  url.searchParams.set("price", String(amount));
+
   window.location.href = url.toString();
 }
 
 country.addEventListener("change", updatePrice);
 service.addEventListener("change", updateWeights);
 weight.addEventListener("change", updatePrice);
-document.getElementById("contactButton").addEventListener("click", contactAdmin);
-document.getElementById("sendParcelButton").addEventListener("click", sendParcel);
+
+document.getElementById("contactButton")
+  .addEventListener("click", contactAdmin);
+
+document.getElementById("sendParcelButton")
+  .addEventListener("click", sendParcel);
 
 updateWeights();
 loadPrices();
