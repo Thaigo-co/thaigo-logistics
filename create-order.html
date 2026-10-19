@@ -1,221 +1,199 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ThaiGo Air Express</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สั่งส่งพัสดุ | ThaiGo Air Express</title>
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#0f2a4a;
-  margin:0;
-  padding:20px;
-}
-
-.container{
-  background:#fff;
-  padding:25px;
-  border-radius:12px;
-  max-width:420px;
-  margin:auto;
-  box-shadow:0 8px 25px rgba(0,0,0,0.2);
-}
-
-.logo{
-  text-align:center;
-}
-
-.logo h1{
-  margin:0;
-  font-size:26px;
-  color:#1e3a8a;
-}
-
-.logo span{
-  font-size:13px;
-  color:#c9a54c;
-  font-weight:bold;
-}
-
-h2{
-  text-align:center;
-  font-size:18px;
-  margin:10px 0;
-}
-
-input,select{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border-radius:6px;
-  border:1px solid #ddd;
-}
-
-.row{
-  display:flex;
-  gap:8px;
-}
-
-button{
-  width:100%;
-  padding:14px;
-  background:#1e3a8a;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  font-size:15px;
-  margin-top:10px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-}
-
-.result{
-  margin-top:15px;
-  background:#f4f6f8;
-  padding:15px;
-  border-radius:8px;
-  text-align:center;
-}
-
-.badge{
-  color:#0a7c2f;
-  margin-top:8px;
-  font-size:14px;
-}
-
-.line-btn{
-  display:block;
-  margin-top:15px;
-  text-align:center;
-  background:#06c755;
-  color:#fff;
-  padding:12px;
-  border-radius:6px;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-.footer{
-  text-align:center;
-  margin-top:10px;
-  font-size:12px;
-  color:#666;
-}
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#0f2a4a;margin:0;padding:18px;color:#172033}
+.container{max-width:600px;margin:auto;background:white;border-radius:16px;padding:22px}
+h1{text-align:center;color:#1e3a8a;margin:0}
+.subtitle{text-align:center;color:#b28b37;margin:4px 0 22px}
+h2{font-size:18px;margin-top:24px;border-bottom:1px solid #ddd;padding-bottom:8px}
+label{display:block;font-size:14px;margin-top:12px}
+input,select,textarea{width:100%;padding:12px;margin-top:5px;border:1px solid #cbd5e1;border-radius:7px;font:inherit}
+textarea{min-height:90px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.summary{background:#eef4ff;padding:14px;border-radius:9px;line-height:1.8}
+button{width:100%;padding:14px;border:0;border-radius:8px;background:#1e3a8a;color:white;font-size:16px;margin-top:18px;cursor:pointer}
+button:disabled{opacity:.6}
+.note{font-size:12px;color:#64748b;line-height:1.6}
+#message{margin-top:14px;white-space:pre-wrap;line-height:1.7}
+@media(max-width:420px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
-
 <body>
-
 <div class="container">
-
-<div class="logo">
 <h1>ThaiGo</h1>
-<span>AIR EXPRESS</span>
+<div class="subtitle">AIR EXPRESS · แบบฟอร์มสั่งส่งพัสดุ</div>
+
+<div class="summary" id="summary">กรุณาตรวจสอบข้อมูลพัสดุและกรอกรายละเอียดด้านล่าง</div>
+
+<form id="orderForm">
+<h2>1. ข้อมูลผู้ส่ง</h2>
+<label>ชื่อ-นามสกุลผู้ส่ง *</label>
+<input name="customer_name" required autocomplete="name">
+
+<label>เบอร์โทรศัพท์ผู้ส่ง *</label>
+<input name="phone" type="tel" required autocomplete="tel">
+
+<label>ประเทศที่อยู่ผู้ส่ง *</label>
+<input name="sender_country" value="Thailand" required>
+
+<label>ที่อยู่ผู้ส่งโดยละเอียด *</label>
+<textarea name="sender_address" placeholder="บ้านเลขที่ ถนน ตำบล/เขต จังหวัด รหัสไปรษณีย์" required></textarea>
+
+<h2>2. ข้อมูลผู้รับ</h2>
+<label>ชื่อ-นามสกุลผู้รับ *</label>
+<input name="receiver_name" required>
+
+<label>เบอร์โทรศัพท์ผู้รับ *</label>
+<input name="receiver_phone" type="tel" required>
+
+<label>ประเทศปลายทาง *</label>
+<select name="receiver_country" id="receiverCountry" required>
+<option value="">เลือกประเทศ</option>
+<option value="USA">สหรัฐอเมริกา</option>
+<option value="Australia">ออสเตรเลีย</option>
+<option value="Canada">แคนาดา</option>
+<option value="Hong Kong">ฮ่องกง</option>
+<option value="New Zealand">นิวซีแลนด์</option>
+<option value="Singapore">สิงคโปร์</option>
+<option value="Taiwan">ไต้หวัน</option>
+</select>
+
+<label>ที่อยู่ผู้รับโดยละเอียด *</label>
+<textarea name="receiver_address" placeholder="บ้านเลขที่ ถนน เมือง/รัฐ จังหวัด และรหัสไปรษณีย์" required></textarea>
+
+<h2>3. รายละเอียดพัสดุ</h2>
+<div class="grid">
+<div>
+<label>น้ำหนัก (กก.) *</label>
+<input name="weight" id="weight" type="number" min="0.1" step="0.1" required>
+</div>
+<div>
+<label>ราคาค่าส่ง (บาท)</label>
+<input name="shipping_price" id="shippingPrice" type="number" min="0" step="0.01" placeholder="รอยืนยันราคา">
+</div>
 </div>
 
-<h2>คำนวณค่าส่งพัสดุ</h2>
-
-<label>ประเทศปลายทาง</label>
-<select id="country"></select>
-
-<label>น้ำหนัก (กก.)</label>
-<input type="number" id="weight" placeholder="เช่น 1">
-
-<div class="row">
-<input type="number" id="length" placeholder="ยาว">
-<input type="number" id="width" placeholder="กว้าง">
-<input type="number" id="height" placeholder="สูง">
+<div class="grid">
+<div><label>ยาว (ซม.)</label><input name="length_cm" type="number" min="0" step="0.1"></div>
+<div><label>กว้าง (ซม.)</label><input name="width_cm" type="number" min="0" step="0.1"></div>
+<div><label>สูง (ซม.)</label><input name="height_cm" type="number" min="0" step="0.1"></div>
 </div>
 
-<button onclick="calculate()">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-<path d="M2 16l20-4-20-4v3l15 1-15 1z"/>
-</svg>
-คำนวณราคา
-</button>
+<label>บริการขนส่ง</label>
+<select name="service" id="service">
+<option value="normal">เรทปกติ</option>
+<option value="express">เรทด่วน</option>
+</select>
 
-<div class="result" id="result">กำลังโหลดราคา...</div>
+<h2>4. วิธีส่งพัสดุให้ ThaiGo</h2>
+<label>เลือกวิธีส่ง *</label>
+<select name="pickup_method" id="pickupMethod" required>
+<option value="ส่งพัสดุเอง">นำส่งตามที่แอดมินแจ้ง</option>
+<option value="ขอเข้ารับพัสดุ">ขอสอบถามบริการเข้ารับพัสดุ</option>
+</select>
 
-<a href="https://lin.ee/xfm469D">
-ติดต่อผ่าน LINE
-</a>
+<label>ที่อยู่รับพัสดุ (กรณีขอเข้ารับ)</label>
+<textarea name="pickup_address" placeholder="กรอกที่อยู่ที่ต้องการให้เข้ารับ หากเลือกบริการเข้ารับ"></textarea>
 
-<div class="footer">
-รวมภาษีแล้ว • ไม่มีค่าใช้จ่ายเพิ่มเติม • ส่งไว 3-7 วัน
-</div>
+<label>วันที่ต้องการให้เข้ารับ (ถ้ามี)</label>
+<input name="pickup_date" type="date">
 
+<p class="note">ราคาค่าส่งและการเข้ารับพัสดุจะต้องได้รับการยืนยันจาก ThaiGo ก่อนชำระเงิน การส่งคำขอนี้ยังไม่ใช่การจองรถเข้ารับโดยอัตโนมัติ</p>
+
+<button id="submitButton" type="submit">ส่งคำขอออเดอร์</button>
+<div id="message" role="status"></div>
+</form>
 </div>
 
 <script>
-let pricing = {};
+const ORDER_API = "https://script.google.com/macros/s/AKfycbzPFGKF_OTnhCgmM4EobmBiJo9qJ2vsJObvIwYHj66adOyGRc3XGDEVkOgfMVI4AO3R/exec";
+const params = new URLSearchParams(location.search);
 
-async function loadPricing(){
-  const url = "https://opensheet.elk.sh/1bkT93uDRhnTeb_nFzKWXsTbtDhGKbl-B_TNf_4gIX4Y/pricing_master";
-  let res = await fetch(url);
-  let data = await res.json();
+const countryMap = {
+  usa: "USA",
+  australia: "Australia",
+  canada: "Canada",
+  hongkong: "Hong Kong",
+  newzealand: "New Zealand",
+  singapore: "Singapore",
+  taiwan: "Taiwan"
+};
 
-  let countries = new Set();
+const countryParam = params.get("country");
+const mappedCountry = countryMap[(countryParam || "").toLowerCase()] || countryParam || "";
 
-  data.forEach(row => {
-    let country = row.country;
-    let weight = parseFloat(row.weight);
-    let price = parseFloat((row.price || "0").replace(/,/g,''));
-
-    if(!country || isNaN(weight) || isNaN(price)) return;
-
-    countries.add(country);
-
-    if(!pricing[country]){
-      pricing[country] = {};
-    }
-
-    pricing[country][weight] = price;
-  });
-
-  let select = document.getElementById("country");
-  countries.forEach(c=>{
-    let opt = document.createElement("option");
-    opt.value = c;
-    opt.textContent = c;
-    select.appendChild(opt);
-  });
-
-  document.getElementById("result").innerHTML = "พร้อมใช้งานแล้ว";
+if (mappedCountry) {
+  const select = document.getElementById("receiverCountry");
+  const match = [...select.options].find(o => o.value.toLowerCase() === mappedCountry.toLowerCase());
+  if (match) select.value = match.value;
 }
 
-loadPricing();
+if (params.get("weight")) {
+  document.getElementById("weight").value = params.get("weight");
+}
+if (params.get("service")) {
+  document.getElementById("service").value = params.get("service");
+}
+if (params.get("price")) {
+  document.getElementById("shippingPrice").value = params.get("price");
+}
 
-function calculate(){
-  let country = document.getElementById("country").value;
-  let w = parseFloat(document.getElementById("weight").value) || 0;
-  let l = parseFloat(document.getElementById("length").value) || 0;
-  let wi = parseFloat(document.getElementById("width").value) || 0;
-  let h = parseFloat(document.getElementById("height").value) || 0;
+document.getElementById("summary").textContent =
+  "ประเทศปลายทาง: " + (mappedCountry || "กรุณาเลือกประเทศ") +
+  " · น้ำหนัก: " + (params.get("weight") || "ยังไม่ระบุ") + " กก.";
 
-  let vol = (l * wi * h) / 5000;
-  let charge = Math.max(w, vol);
-  charge = Math.ceil(charge * 10) / 10;
+document.getElementById("orderForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
-  let table = pricing[country];
+  const form = e.currentTarget;
+  const button = document.getElementById("submitButton");
+  const message = document.getElementById("message");
+  const data = Object.fromEntries(new FormData(form).entries());
 
-  if(!table){
-    document.getElementById("result").innerHTML = "ยังไม่มีราคาประเทศนี้";
+  data.country = data.receiver_country;
+  data.weight = Number(data.weight);
+  data.shipping_price = data.shipping_price === "" ? "" : Number(data.shipping_price);
+
+  if (!data.receiver_country) {
+    message.textContent = "กรุณาเลือกประเทศปลายทาง";
     return;
   }
 
-  let keys = Object.keys(table).map(Number).sort((a,b)=>a-b);
-  let finalWeight = keys.find(k => k >= charge) || keys[keys.length-1];
-  let price = table[finalWeight];
+  button.disabled = true;
+  button.textContent = "กำลังส่งคำขอ...";
+  message.textContent = "";
 
-  document.getElementById("result").innerHTML =
-  `น้ำหนักคิดราคา: <b>${charge} กก.</b><br>
-   ค่าส่ง: <b>${price} บาท</b><br>
-   <div class="badge">รวมภาษีแล้ว ไม่มีค่าใช้จ่ายเพิ่ม</div>`;
-}
+  try {
+    const response = await fetch(ORDER_API, {
+      method: "POST",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "ไม่สามารถบันทึกออเดอร์ได้");
+    }
+
+    message.textContent =
+      "ส่งคำขอเรียบร้อยแล้วค่ะ\nรหัสออเดอร์: " + result.order_id +
+      "\nกรุณาติดต่อ ThaiGo เพื่อยืนยันราคาและวิธีชำระเงิน\nLINE: @710rkcan";
+    form.reset();
+  } catch (err) {
+    message.textContent =
+      "ยังส่งข้อมูลไม่สำเร็จค่ะ กรุณาติดต่อแอดมินทาง LINE @710rkcan\nรายละเอียด: " + err.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = "ส่งคำขอออเดอร์";
+  }
+});
 </script>
-
 </body>
 </html>
