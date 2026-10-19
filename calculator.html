@@ -1,7 +1,103 @@
 
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คำนวณค่าส่ง | ThaiGo Air Express</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Leelawadee UI",Tahoma,"Noto Sans Thai",sans-serif;
+  color:#183153;
+  background:linear-gradient(145deg,#eaf2ff,#f8fafc 55%,#fff0f1);
+  min-height:100vh;
+}
+.wrap{max-width:520px;margin:auto;padding:28px 16px}
+.card{
+  background:#fff;border:1px solid #e3eaf3;border-radius:24px;
+  padding:24px;box-shadow:0 14px 38px rgba(23,54,93,.12)
+}
+.brand{text-align:center;font-size:29px;font-weight:800;color:#17365d}
+.brand span{color:#dc2626}
+.sub{text-align:center;color:#64748b;font-size:14px;margin:8px 0 24px}
+.tag{
+  text-align:center;font-size:12px;color:#17365d;background:#eff6ff;
+  border-radius:20px;padding:7px 12px;width:fit-content;margin:0 auto 22px
+}
+label{display:block;font-size:15px;font-weight:700;margin:20px 0 9px}
+select{
+  display:block;width:100%;padding:14px 12px;border:1px solid #cbd5e1;
+  border-radius:12px;background:#fff;color:#183153;font:inherit
+}
+.result{
+  margin-top:25px;padding:23px 15px;border-radius:18px;text-align:center;
+  color:white;background:linear-gradient(135deg,#17365d,#2459a6)
+}
+.result-label{font-size:14px;color:#dbeafe}
+.price{font-size:36px;font-weight:800;margin:12px 0;overflow-wrap:anywhere}
+#delivery{font-size:13px;color:#e2e8f0;line-height:1.7}
+button{
+  display:block;width:100%;padding:15px;border:0;border-radius:12px;
+  color:#fff;font:inherit;font-size:16px;font-weight:700;margin-top:14px;
+  cursor:pointer
+}
+#sendParcelButton{background:#15803d}
+#contactButton{background:#dc2626}
+button:disabled{opacity:.6;cursor:not-allowed}
+.note{font-size:12px;color:#64748b;line-height:1.9;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}
+.footer{text-align:center;font-size:12px;color:#64748b;margin-top:18px}
+@media(max-width:380px){.card{padding:18px}.brand{font-size:25px}.price{font-size:31px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="card">
+    <div class="brand">📦 Thai<span>Go</span> Air Express</div>
+    <div class="sub">บริการจัดส่งพัสดุจากไทยไปต่างประเทศ</div>
+    <div class="tag">✈️ คำนวณค่าส่งเบื้องต้นได้ด้วยตัวเอง</div>
+
+    <label for="country">1. ประเทศปลายทาง</label>
+    <select id="country">
+      <option value="usa">🇺🇸 สหรัฐอเมริกา (USA)</option>
+      <option value="australia">🇦🇺 ออสเตรเลีย</option>
+      <option value="canada">🇨🇦 แคนาดา</option>
+      <option value="hongkong">🇭🇰 ฮ่องกง</option>
+      <option value="newzealand">🇳🇿 นิวซีแลนด์</option>
+      <option value="singapore">🇸🇬 สิงคโปร์</option>
+      <option value="taiwan">🇹🇼 ไต้หวัน</option>
+    </select>
+
+    <label for="service">2. ประเภทบริการ</label>
+    <select id="service">
+      <option value="normal">เรทปกติ · 7–20 วัน · สูงสุด 6 กก.</option>
+      <option value="express">เรทด่วน · 5–7 วัน · สูงสุด 20 กก.</option>
+    </select>
+
+    <label for="weight">3. น้ำหนักพัสดุ</label>
+    <select id="weight"></select>
+
+    <section class="result">
+      <div class="result-label">ราคาจัดส่งเบื้องต้น</div>
+      <div class="price" id="price">กำลังโหลดราคา...</div>
+      <div id="delivery">กำลังเชื่อมต่อระบบราคา</div>
+    </section>
+
+    <button type="button" id="sendParcelButton">📦 ส่งพัสดุกับ ThaiGo</button>
+    <button type="button" id="contactButton">สอบถาม / จองส่งพัสดุทาง LINE</button>
+
+    <div class="note">
+      • ระยะเวลาจัดส่งเป็นเวลาโดยประมาณ<br>
+      • ประเทศที่ยังไม่มีตารางราคา กรุณาติดต่อแอดมิน<br>
+      • โปรดยืนยันราคาและเงื่อนไขก่อนจัดส่ง
+    </div>
+  </main>
+  <div class="footer">ThaiGo Air Express · ส่งพัสดุจากไทยไปต่างประเทศ</div>
+</div>
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxI64cbohyMo_ZXNk173k18nJIJcBRZvfECZY7tnrkltazJN22rwAGCkGdcLJOiXNzC/exec";
-
 let prices = {};
 
 const country = document.getElementById("country");
@@ -9,116 +105,97 @@ const service = document.getElementById("service");
 const weight = document.getElementById("weight");
 const price = document.getElementById("price");
 const delivery = document.getElementById("delivery");
+const sendButton = document.getElementById("sendParcelButton");
 
-async function loadPrices() {
+async function loadPrices(){
   price.textContent = "กำลังโหลดราคา...";
+  delivery.textContent = "กำลังเชื่อมต่อระบบราคา";
 
-  try {
+  try{
     const response = await fetch(API_URL);
-    if (!response.ok) throw new Error("โหลดราคาไม่สำเร็จ");
+    if(!response.ok) throw new Error("โหลดราคาไม่สำเร็จ");
 
     const data = await response.json();
-
-    if (data.error || !data.prices) {
+    if(data.error || !data.prices){
       throw new Error(data.error || "ไม่พบข้อมูลราคา");
     }
 
     prices = data.prices;
     updatePrice();
-
-  } catch (error) {
-    console.error("Price API error:", error);
+  }catch(error){
+    console.error("Price API error:",error);
     price.textContent = "โหลดราคาไม่สำเร็จ";
-    delivery.textContent = "กรุณาติดต่อแอดมินทาง LINE";
+    delivery.textContent = "กรุณารีเฟรชหน้าเว็บ หรือติดต่อแอดมินทาง LINE";
   }
 }
 
-function updateWeights() {
+function updateWeights(){
   const max = service.value === "normal" ? 6 : 20;
   const previousWeight = Number(weight.value) || 1;
-
   weight.innerHTML = "";
 
-  for (let i = 1; i <= max; i++) {
+  for(let i=1;i<=max;i++){
     const option = document.createElement("option");
     option.value = String(i);
     option.textContent = i + " กิโลกรัม";
     weight.appendChild(option);
   }
 
-  weight.value = String(Math.min(previousWeight, max));
+  weight.value = String(Math.min(previousWeight,max));
   updatePrice();
 }
 
-function updatePrice() {
+function updatePrice(){
   const countryCode = country.value;
-  const selectedService = service.value;
-  const selectedWeight = weight.value;
+  const amount = prices[countryCode]?.[service.value]?.[weight.value];
 
-  const amount =
-    prices[countryCode]?.[selectedService]?.[selectedWeight];
-
-  if (typeof amount === "number" && Number.isFinite(amount)) {
-    price.textContent = amount.toLocaleString("th-TH", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+  if(typeof amount === "number" && Number.isFinite(amount)){
+    price.textContent = amount.toLocaleString("th-TH",{
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
     }) + " บาท";
-  } else {
+    sendButton.disabled = false;
+  }else{
     price.textContent = "สอบถามราคา";
+    sendButton.disabled = true;
   }
 
-  const countryName =
-    country.options[country.selectedIndex]?.text || countryCode;
-
+  const countryName = country.options[country.selectedIndex].text;
   delivery.textContent = countryCode !== "usa"
     ? countryName + " · ติดต่อแอดมินเพื่อตรวจสอบราคา"
     : countryName + " · " +
-      (selectedService === "normal"
-        ? "เรทปกติ 7–20 วัน"
-        : "เรทด่วน 5–7 วัน");
+      (service.value === "normal" ? "เรทปกติ 7–20 วัน" : "เรทด่วน 5–7 วัน");
 }
 
-function contactAdmin() {
-  window.open(
-    "https://line.me/R/ti/p/@710rkcan",
-    "_blank",
-    "noopener"
-  );
+function contactAdmin(){
+  window.open("https://line.me/R/ti/p/@710rkcan","_blank","noopener");
 }
 
-function sendParcel() {
-  const countryCode = country.value;
-  const selectedService = service.value;
-  const selectedWeight = weight.value;
+function sendParcel(){
+  const amount = prices[country.value]?.[service.value]?.[weight.value];
 
-  const amount =
-    prices[countryCode]?.[selectedService]?.[selectedWeight];
-
-  if (typeof amount !== "number" || !Number.isFinite(amount)) {
+  if(typeof amount !== "number" || !Number.isFinite(amount)){
     alert("ยังไม่มีราคาสำหรับตัวเลือกนี้ กรุณาติดต่อแอดมิน");
     return;
   }
 
-  const url = new URL("create-order.html", window.location.href);
-
-  url.searchParams.set("country", countryCode);
-  url.searchParams.set("service", selectedService);
-  url.searchParams.set("weight", selectedWeight);
-  url.searchParams.set("price", String(amount));
+  const url = new URL("create-order.html",window.location.href);
+  url.searchParams.set("country",country.value);
+  url.searchParams.set("service",service.value);
+  url.searchParams.set("weight",weight.value);
+  url.searchParams.set("price",String(amount));
 
   window.location.href = url.toString();
 }
 
-country.addEventListener("change", updatePrice);
-service.addEventListener("change", updateWeights);
-weight.addEventListener("change", updatePrice);
-
-document.getElementById("contactButton")
-  .addEventListener("click", contactAdmin);
-
-document.getElementById("sendParcelButton")
-  .addEventListener("click", sendParcel);
+country.addEventListener("change",updatePrice);
+service.addEventListener("change",updateWeights);
+weight.addEventListener("change",updatePrice);
+document.getElementById("contactButton").addEventListener("click",contactAdmin);
+sendButton.addEventListener("click",sendParcel);
 
 updateWeights();
 loadPrices();
 </script>
+</body>
+</html>
