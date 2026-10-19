@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -55,7 +55,7 @@
       background: #eef5ff;
       border-radius: 10px;
       padding: 14px;
-      line-height: 1.6;
+      line-height: 1.7;
     }
     .result {
       margin-top: 18px;
@@ -91,8 +91,8 @@
     }
     .error { color: #b42318; }
     .success { color: #167647; }
-    footer { text-align: center; color: #64748b; padding: 24px; font-size: 13px; }
-    #preview img { max-width: 220px; width: 100%; display: block; }
+    .primary { width: 100%; margin-top: 16px; }
+    #preview img { max-width: 240px; width: 100%; display: block; }
     @media (max-width: 560px) {
       .search-row { flex-direction: column; }
       .card { padding: 17px; }
@@ -101,218 +101,292 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>ThaiGo Air Express</h1>
-    <p>ระบบจัดการออเดอร์และ QR รับชำระเงิน</p>
-  </header>
+<header>
+  <h1>ThaiGo Air Express</h1>
+  <p>ระบบจัดการออเดอร์และ QR รับชำระเงิน</p>
+</header>
 
-  <main>
-    <section class="card">
-      <h2>ค้นหาออเดอร์</h2>
-      <p class="hint">กรอกรหัสออเดอร์เพื่อค้นหาข้อมูลจาก Google Sheets</p>
-      <div class="search-row">
-        <input id="orderId" placeholder="เช่น TG20261019165140104"
-               autocomplete="off">
-        <button id="searchButton" type="button" onclick="searchOrder()">
-          ค้นหา
-        </button>
-      </div>
-      <p id="searchMessage" class="hint" aria-live="polite">
-        กรอกรหัสออเดอร์แล้วกดค้นหา
-      </p>
-      <div id="orderResult" aria-live="polite"></div>
-    </section>
+<main>
+  <section class="card">
+    <h2>ค้นหาออเดอร์</h2>
+    <p class="hint">กรอกรหัสออเดอร์เพื่อค้นหาข้อมูลจาก Google Sheets</p>
+    <div class="search-row">
+      <input id="orderId" placeholder="เช่น TG20261019165140104"
+             autocomplete="off">
+      <button id="searchButton" type="button">ค้นหา</button>
+    </div>
+    <p id="searchMessage" class="hint" aria-live="polite">
+      กรอกรหัสออเดอร์แล้วกดค้นหา
+    </p>
+    <div id="orderResult"></div>
+  </section>
 
-    <section class="card">
-      <h2>จัดการ QR รับเงิน</h2>
-      <div class="notice">
-        1. ตรวจสอบออเดอร์และยืนยันยอดค่าส่ง<br>
-        2. สร้าง QR ตามยอดในแอปแม่มณี<br>
-        3. ส่ง QR ให้ลูกค้าผ่านช่องทางที่ตกลงกัน<br>
-        4. ตรวจสอบเงินเข้าจริงก่อนยืนยันการชำระ
-      </div>
+  <section class="card">
+    <h2>บันทึก QR รับเงิน</h2>
+    <div class="notice">
+      1. ค้นหาออเดอร์ก่อนทุกครั้ง<br>
+      2. สร้าง QR ตามยอดค่าส่งในแอปแม่มณี<br>
+      3. เลือกรูป QR และบันทึกผูกกับออเดอร์<br>
+      4. ตรวจสอบเงินเข้าจริงก่อนยืนยันชำระเงิน
+    </div>
 
-      <label for="paymentAmount">ยอดที่ยืนยันแล้ว (บาท)</label>
-      <input id="paymentAmount" type="number" min="0" step="0.01"
-             placeholder="กรอกยอดหลังยืนยันกับลูกค้า">
+    <label for="paymentAmount">ยอด QR (บาท)</label>
+    <input id="paymentAmount" type="number" min="0.01" step="0.01"
+           placeholder="กรอกยอดเงิน">
 
-      <label for="qrImage">เลือกรูป QR จากอุปกรณ์</label>
-      <input id="qrImage" type="file" accept="image/*">
+    <label for="qrImage">เลือกรูป QR จากอุปกรณ์</label>
+    <input id="qrImage" type="file" accept="image/png,image/jpeg,image/webp">
 
-      <p class="hint">
-        ส่วนนี้แสดงตัวอย่าง QR บนอุปกรณ์เท่านั้น ยังไม่ได้อัปโหลดหรือบันทึกลงระบบ
-      </p>
-      <button type="button" onclick="showPreview()">ดูตัวอย่าง QR</button>
-      <div id="preview" style="margin-top:16px"></div>
-    </section>
+    <div id="preview" style="margin-top:16px"></div>
+    <p id="saveMessage" class="hint" aria-live="polite">
+      กรุณาค้นหาออเดอร์ก่อนบันทึก QR
+    </p>
+    <button id="saveButton" class="primary" type="button" disabled>
+      บันทึก QR กับออเดอร์
+    </button>
+  </section>
 
-    <section class="card">
-      <h2>สถานะการชำระเงิน</h2>
-      <p><span class="status">รอตรวจสอบ</span></p>
-      <p class="hint">
-        สถานะในส่วนนี้ยังเป็นตัวอย่าง ไม่ได้เปลี่ยนสถานะจริงใน Google Sheets
-        ต้องตรวจสอบยอดเงินเข้าจริงก่อนยืนยันทุกครั้ง
-      </p>
-    </section>
-  </main>
+  <section class="card">
+    <h2>สถานะการชำระเงิน</h2>
+    <p><span class="status">รอตรวจสอบเงินเข้า</span></p>
+    <p class="hint">
+      การบันทึก QR ไม่ได้ยืนยันว่าลูกค้าชำระแล้ว
+      ต้องตรวจสอบเงินเข้าบัญชีจริงก่อนเปลี่ยนสถานะ
+    </p>
+  </section>
+</main>
 
-  <footer>ThaiGo Air Express · Admin</footer>
+<footer style="text-align:center;color:#64748b;padding:24px;font-size:13px">
+  ThaiGo Air Express · Admin
+</footer>
 
-  <script>
-    // ใช้ Web App เดิม ไม่เปลี่ยน URL ของระบบติดตาม
-    const ORDERS_API =
-      "https://script.google.com/macros/s/AKfycbwyjrVQ1G8qA6kS6aNPm4AZRTNQWOxu6BlhmrVlqlm7nO_NiaJS_MxwFZhgr1XASVqV/exec";
+<script>
+const ORDERS_API =
+  "https://script.google.com/macros/s/AKfycbwyjrVQ1G8qA6kS6aNPm4AZRTNQWOxu6BlhmrVlqlm7nO_NiaJS_MxwFZhgr1XASVqV/exec";
 
-    function addDetail(container, label, value) {
-      const box = document.createElement("div");
-      box.className = "detail";
+const QR_API =
+  "https://script.google.com/macros/s/AKfycbx5Kp6FGWY8BSnxeUDUwgRBoH9lnigRVnEaKvSe2FnFaLiQCe_S6qC_lF1JrKgvy9Q/exec";
 
-      const small = document.createElement("small");
-      small.textContent = label;
+let currentOrder = null;
 
-      const strong = document.createElement("strong");
-      strong.textContent =
-        value === undefined || value === null || value === ""
-          ? "-"
-          : String(value);
+const $ = id => document.getElementById(id);
 
-      box.append(small, strong);
-      container.appendChild(box);
+function setMessage(id, text, type = "hint") {
+  $(id).textContent = text;
+  $(id).className = "hint " + type;
+}
+
+function addDetail(container, label, value) {
+  const box = document.createElement("div");
+  box.className = "detail";
+  const small = document.createElement("small");
+  small.textContent = label;
+  const strong = document.createElement("strong");
+  strong.textContent =
+    value === undefined || value === null || value === ""
+      ? "-" : String(value);
+  box.append(small, strong);
+  container.appendChild(box);
+}
+
+function renderOrder(order) {
+  const result = $("orderResult");
+  result.replaceChildren();
+
+  const card = document.createElement("div");
+  card.className = "result";
+
+  const heading = document.createElement("h3");
+  heading.textContent = "ออเดอร์ " + (order.order_id || "");
+  card.appendChild(heading);
+
+  const grid = document.createElement("div");
+  grid.className = "details";
+
+  [
+    ["วันที่สร้าง", "created_at"],
+    ["ชื่อลูกค้า", "customer_name"],
+    ["โทรศัพท์", "phone"],
+    ["ประเทศปลายทาง", "receiver_country"],
+    ["บริการ", "service"],
+    ["น้ำหนัก (kg)", "weight"],
+    ["ค่าจัดส่ง (บาท)", "shipping_price"],
+    ["สถานะชำระเงิน", "payment_status"],
+    ["สถานะดำเนินการ", "pickup_status"],
+    ["เลขพัสดุ", "tracking_no"],
+    ["ประเทศผู้ส่ง", "sender_country"],
+    ["ที่อยู่ผู้ส่ง", "sender_address"],
+    ["ชื่อผู้รับ", "receiver_name"],
+    ["โทรศัพท์ผู้รับ", "receiver_phone"],
+    ["ที่อยู่ผู้รับ", "receiver_address"],
+    ["หมายเหตุ", "admin_note"]
+  ].forEach(([label, key]) => addDetail(grid, label, order[key]));
+
+  card.appendChild(grid);
+  result.appendChild(card);
+
+  $("paymentAmount").value =
+    order.shipping_price !== "" &&
+    order.shipping_price !== null &&
+    order.shipping_price !== undefined &&
+    Number.isFinite(Number(order.shipping_price))
+      ? Number(order.shipping_price) : "";
+
+  $("saveButton").disabled = false;
+}
+
+async function searchOrder() {
+  const id = $("orderId").value.trim();
+  currentOrder = null;
+  $("saveButton").disabled = true;
+  $("orderResult").replaceChildren();
+
+  if (!id) {
+    setMessage("searchMessage", "กรุณากรอกรหัสออเดอร์", "error");
+    return;
+  }
+
+  $("searchButton").disabled = true;
+  setMessage("searchMessage", "กำลังค้นหาออเดอร์...");
+
+  try {
+    const response = await fetch(
+      ORDERS_API + "?order_id=" + encodeURIComponent(id)
+    );
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const data = await response.json();
+    if (!data.success || !data.order) {
+      throw new Error(data.message || data.error || "ไม่พบออเดอร์");
     }
 
-    function renderOrder(order) {
-      const result = document.getElementById("orderResult");
-      result.replaceChildren();
+    currentOrder = data.order;
+    renderOrder(data.order);
+    setMessage("searchMessage", "ค้นหาออเดอร์สำเร็จ", "success");
+    setMessage("saveMessage", "ตรวจสอบยอดเงินและเลือกรูป QR ก่อนบันทึก");
+  } catch (err) {
+    setMessage(
+      "searchMessage",
+      "ค้นหาไม่สำเร็จ: " + err.message,
+      "error"
+    );
+  } finally {
+    $("searchButton").disabled = false;
+  }
+}
 
-      const card = document.createElement("div");
-      card.className = "result";
+$("searchButton").addEventListener("click", searchOrder);
+$("orderId").addEventListener("keydown", e => {
+  if (e.key === "Enter") searchOrder();
+});
 
-      const heading = document.createElement("h3");
-      heading.textContent = "ข้อมูลออเดอร์ " + (order.order_id || "");
-      card.appendChild(heading);
+$("qrImage").addEventListener("change", () => {
+  $("preview").replaceChildren();
+  const file = $("qrImage").files[0];
+  if (!file) return;
 
-      const grid = document.createElement("div");
-      grid.className = "details";
+  if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+    setMessage("saveMessage", "รองรับเฉพาะ PNG, JPG และ WEBP", "error");
+    $("qrImage").value = "";
+    return;
+  }
 
-      const fields = [
-        ["วันที่สร้างออเดอร์", "created_at"],
-        ["ชื่อลูกค้า", "customer_name"],
-        ["โทรศัพท์ลูกค้า", "phone"],
-        ["ประเทศปลายทาง", "receiver_country"],
-        ["บริการ", "service"],
-        ["น้ำหนัก (kg)", "weight"],
-        ["ค่าจัดส่ง (บาท)", "shipping_price"],
-        ["สถานะชำระเงิน", "payment_status"],
-        ["สถานะดำเนินการ", "pickup_status"],
-        ["เลขพัสดุ", "tracking_no"],
-        ["ประเทศผู้ส่ง", "sender_country"],
-        ["ที่อยู่ผู้ส่ง", "sender_address"],
-        ["ชื่อผู้รับ", "receiver_name"],
-        ["โทรศัพท์ผู้รับ", "receiver_phone"],
-        ["ที่อยู่ผู้รับ", "receiver_address"],
-        ["หมายเหตุ", "admin_note"]
-      ];
+  if (file.size > 3 * 1024 * 1024) {
+    setMessage("saveMessage", "กรุณาเลือกรูปขนาดไม่เกิน 3 MB", "error");
+    $("qrImage").value = "";
+    return;
+  }
 
-      fields.forEach(([label, key]) => {
-        addDetail(grid, label, order[key]);
-      });
+  const img = document.createElement("img");
+  img.alt = "ตัวอย่าง QR";
+  img.src = URL.createObjectURL(file);
+  $("preview").appendChild(img);
+});
 
-      card.appendChild(grid);
-      result.appendChild(card);
+function fileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("อ่านไฟล์รูปไม่สำเร็จ"));
+    reader.readAsDataURL(file);
+  });
+}
 
-      const amount = document.getElementById("paymentAmount");
-      if (order.shipping_price !== "" &&
-          order.shipping_price !== null &&
-          order.shipping_price !== undefined &&
-          Number.isFinite(Number(order.shipping_price))) {
-        amount.value = Number(order.shipping_price);
-      } else {
-        amount.value = "";
-      }
-    }
+async function saveQR() {
+  if (!currentOrder || !currentOrder.order_id) {
+    setMessage("saveMessage", "กรุณาค้นหาออเดอร์ก่อน", "error");
+    return;
+  }
 
-    async function searchOrder() {
-      const id = document.getElementById("orderId").value.trim();
-      const message = document.getElementById("searchMessage");
-      const result = document.getElementById("orderResult");
-      const button = document.getElementById("searchButton");
+  const amount = Number($("paymentAmount").value);
+  const file = $("qrImage").files[0];
 
-      result.replaceChildren();
+  if (!Number.isFinite(amount) || amount <= 0) {
+    setMessage("saveMessage", "กรุณากรอกยอดเงินที่ถูกต้อง", "error");
+    return;
+  }
 
-      if (!id) {
-        message.textContent = "กรุณากรอกรหัสออเดอร์";
-        message.className = "hint error";
-        return;
-      }
+  if (!file) {
+    setMessage("saveMessage", "กรุณาเลือกรูป QR", "error");
+    return;
+  }
 
-      button.disabled = true;
-      message.textContent = "กำลังค้นหาออเดอร์จาก Google Sheets...";
-      message.className = "hint";
+  if (file.size > 3 * 1024 * 1024) {
+    setMessage("saveMessage", "รูปต้องไม่เกิน 3 MB", "error");
+    return;
+  }
 
-      try {
-        const url = ORDERS_API + "?order_id=" + encodeURIComponent(id);
-        const response = await fetch(url, { method: "GET" });
+  if (!confirm(
+    "ยืนยันบันทึก QR สำหรับออเดอร์ " +
+    currentOrder.order_id + " จำนวน " + amount + " บาท?"
+  )) return;
 
-        if (!response.ok) {
-          throw new Error("เซิร์ฟเวอร์ตอบกลับผิดปกติ (" +
-            response.status + ")");
-        }
+  $("saveButton").disabled = true;
+  setMessage("saveMessage", "กำลังส่งข้อมูล QR ไปบันทึก...");
 
-        const data = await response.json();
+  try {
+    const base64 = await fileAsDataURL(file);
 
-        if (!data.success || !data.order) {
-          message.textContent =
-            data.message || data.error || "ไม่พบออเดอร์นี้ในระบบ";
-          message.className = "hint error";
-          return;
-        }
-
-        renderOrder(data.order);
-        message.textContent = "ค้นหาออเดอร์สำเร็จ";
-        message.className = "hint success";
-
-      } catch (error) {
-        message.textContent =
-          "เชื่อมต่อข้อมูลไม่สำเร็จ กรุณาตรวจสอบการเผยแพร่ Apps Script " +
-          "และสิทธิ์การเข้าถึง แล้วลองใหม่อีกครั้ง";
-        message.className = "hint error";
-        console.error("ThaiGo order search error:", error);
-      } finally {
-        button.disabled = false;
-      }
-    }
-
-    document.getElementById("orderId").addEventListener("keydown", event => {
-      if (event.key === "Enter") searchOrder();
+    // ต้องตั้งค่า QR Admin API ให้รองรับการตรวจสอบผลก่อนใช้งานจริง
+    const response = await fetch(QR_API, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=UTF-8" },
+      body: JSON.stringify({
+        order_id: currentOrder.order_id,
+        amount: amount,
+        mime_type: file.type,
+        qr_base64: base64
+      }),
+      mode: "cors"
     });
 
-    function showPreview() {
-      const file = document.getElementById("qrImage").files[0];
-      const preview = document.getElementById("preview");
-      preview.replaceChildren();
+    if (!response.ok) throw new Error("HTTP " + response.status);
 
-      if (!file) {
-        preview.textContent = "กรุณาเลือกรูป QR ก่อนค่ะ";
-        return;
-      }
+    const data = await response.json();
 
-      if (!file.type.startsWith("image/")) {
-        preview.textContent = "กรุณาเลือกไฟล์รูปภาพค่ะ";
-        return;
-      }
-
-      const image = document.createElement("img");
-      image.alt = "ตัวอย่างรูป QR";
-      image.src = URL.createObjectURL(file);
-      preview.appendChild(image);
-
-      const note = document.createElement("p");
-      note.className = "hint";
-      note.textContent =
-        "นี่เป็นเพียงตัวอย่างบนอุปกรณ์นี้ ยังไม่ได้อัปโหลดไปเก็บในระบบ";
-      preview.appendChild(note);
+    if (!data.success) {
+      throw new Error(data.message || "API ปฏิเสธการบันทึก");
     }
-  </script>
+
+    setMessage(
+      "saveMessage",
+      "บันทึก QR สำเร็จสำหรับออเดอร์ " +
+      data.order_id + " จำนวน " + data.amount + " บาท",
+      "success"
+    );
+  } catch (err) {
+    setMessage(
+      "saveMessage",
+      "ยังยืนยันการบันทึกไม่ได้: " + err.message +
+      " กรุณาตรวจสอบ Google Sheets ก่อนส่ง QR ให้ลูกค้า",
+      "error"
+    );
+  } finally {
+    $("saveButton").disabled = false;
+  }
+}
+
+$("saveButton").addEventListener("click", saveQR);
+</script>
 </body>
 </html>
-```
