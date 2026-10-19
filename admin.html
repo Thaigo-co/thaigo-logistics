@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ThaiGo Admin</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5fb;
+      color: #1b2b46;
+    }
+    header {
+      background: #17345c;
+      color: white;
+      padding: 22px;
+    }
+    header h1 { margin: 0; font-size: 25px; }
+    header p { margin: 7px 0 0; color: #dce8fa; }
+    main { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+    .card {
+      background: white;
+      padding: 22px;
+      margin-bottom: 18px;
+      border-radius: 14px;
+      box-shadow: 0 3px 14px #122b4a0d;
+    }
+    h2 { font-size: 19px; margin-top: 0; }
+    label { display: block; font-weight: bold; margin: 14px 0 7px; }
+    input, select, button {
+      font: inherit;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    input, select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      background: white;
+    }
+    button {
+      border: 0;
+      background: #1765db;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .search-row { display: flex; gap: 10px; }
+    .search-row input { flex: 1; min-width: 0; }
+    .hint { color: #64748b; font-size: 14px; line-height: 1.6; }
+    .status {
+      display: inline-block;
+      background: #fff0c2;
+      color: #805500;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .notice {
+      background: #eef5ff;
+      border-radius: 10px;
+      padding: 14px;
+      line-height: 1.6;
+    }
+    footer { text-align: center; color: #64748b; padding: 24px; font-size: 13px; }
+    @media (max-width: 560px) {
+      .search-row { flex-direction: column; }
+      .card { padding: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ThaiGo Air Express</h1>
+    <p>ระบบจัดการออเดอร์และ QR รับชำระเงิน</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>ค้นหาออเดอร์</h2>
+      <p class="hint">กรอกรหัสออเดอร์เพื่อเตรียมตรวจสอบข้อมูลและยอดชำระ</p>
+      <div class="search-row">
+        <input id="orderId" placeholder="เช่น TG20261019165140104">
+        <button type="button" onclick="searchOrder()">ค้นหา</button>
+      </div>
+      <p id="searchMessage" class="hint">หน้านี้ยังไม่ได้เชื่อมต่อข้อมูลออเดอร์จริง</p>
+    </section>
+
+    <section class="card">
+      <h2>จัดการ QR รับเงิน</h2>
+      <div class="notice">
+        1. ตรวจสอบออเดอร์และยืนยันยอดค่าส่ง<br>
+        2. สร้าง QR ตามยอดในแอปแม่มณี<br>
+        3. บันทึกรูป QR ให้ตรงกับออเดอร์<br>
+        4. ตรวจสอบเงินเข้าจริงก่อนยืนยันการชำระ
+      </div>
+      <label for="paymentAmount">ยอดที่ยืนยันแล้ว (บาท)</label>
+      <input id="paymentAmount" type="number" min="0" step="0.01" placeholder="กรอกยอดหลังยืนยันกับลูกค้า">
+
+      <label for="qrImage">เลือกรูป QR จากอุปกรณ์</label>
+      <input id="qrImage" type="file" accept="image/*">
+
+      <p class="hint">
+        ตัวอย่างนี้เป็นเพียงหน้าตาเบื้องต้น รูปที่เลือกจะยังไม่ถูกอัปโหลดหรือบันทึกลงระบบ
+      </p>
+      <button type="button" onclick="showPreview()">ดูตัวอย่าง QR</button>
+      <div id="preview" style="margin-top:16px"></div>
+    </section>
+
+    <section class="card">
+      <h2>สถานะการชำระเงิน</h2>
+      <p><span class="status">รอตรวจสอบ</span></p>
+      <p class="hint">
+        สถานะนี้เป็นตัวอย่างเท่านั้น ระบบจะเปลี่ยนสถานะจริงได้หลังเชื่อมต่อหลังบ้านและตรวจสอบเงินเข้าแล้ว
+      </p>
+    </section>
+  </main>
+
+  <footer>ThaiGo Air Express · Admin Preview</footer>
+
+  <script>
+    function searchOrder() {
+      const id = document.getElementById("orderId").value.trim();
+      document.getElementById("searchMessage").textContent =
+        id ? "ตัวอย่างหน้าจอเท่านั้น ยังไม่ได้ค้นหาออเดอร์จริง" :
+        "กรุณากรอกรหัสออเดอร์";
+    }
+
+    function showPreview() {
+      const file = document.getElementById("qrImage").files[0];
+      const preview = document.getElementById("preview");
+      preview.replaceChildren();
+
+      if (!file) {
+        preview.textContent = "กรุณาเลือกรูป QR ก่อนค่ะ";
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        preview.textContent = "กรุณาเลือกไฟล์รูปภาพค่ะ";
+        return;
+      }
+
+      const image = document.createElement("img");
+      image.alt = "ตัวอย่างรูป QR";
+      image.style.maxWidth = "220px";
+      image.style.width = "100%";
+      image.style.display = "block";
+      image.src = URL.createObjectURL(file);
+      preview.appendChild(image);
+      const note = document.createElement("p");
+      note.className = "hint";
+      note.textContent = "นี่เป็นเพียงตัวอย่างบนอุปกรณ์นี้ ยังไม่ได้อัปโหลดไปเก็บในระบบ";
+      preview.appendChild(note);
+    }
+  </script>
+</body>
+</html>
