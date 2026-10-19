@@ -18,10 +18,18 @@ textarea{min-height:90px;resize:vertical}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .summary{background:#eef4ff;padding:14px;border-radius:9px;line-height:1.8}
 button{width:100%;padding:14px;border:0;border-radius:8px;background:#1e3a8a;color:white;font-size:16px;margin-top:18px;cursor:pointer}
-button:disabled{opacity:.6}
+button:disabled{opacity:.6;cursor:wait}
 .note{font-size:12px;color:#64748b;line-height:1.6}
 #message{margin-top:14px;white-space:pre-wrap;line-height:1.7}
-@media(max-width:420px){.grid{grid-template-columns:1fr}}
+#paymentPanel{display:none;margin-top:22px;padding:18px;border:2px solid #dbeafe;border-radius:12px;text-align:center}
+#paymentPanel h2{margin-top:0;color:#1e3a8a}
+#qrImage{display:none;width:100%;max-width:320px;height:auto;margin:16px auto;border:1px solid #e2e8f0;border-radius:8px}
+.amount{font-size:28px;font-weight:bold;color:#1e3a8a;margin:10px 0}
+.status{background:#f1f5f9;border-radius:8px;padding:12px;line-height:1.7;white-space:pre-wrap}
+.success{background:#ecfdf5;color:#166534}
+.error{background:#fef2f2;color:#991b1b}
+.secondary{background:#64748b}
+@media(max-width:420px){.grid{grid-template-columns:1fr}.container{padding:16px}}
 </style>
 </head>
 <body>
@@ -29,7 +37,9 @@ button:disabled{opacity:.6}
 <h1>ThaiGo</h1>
 <div class="subtitle">AIR EXPRESS · แบบฟอร์มสั่งส่งพัสดุ</div>
 
-<div class="summary" id="summary">กรุณาตรวจสอบข้อมูลพัสดุและกรอกรายละเอียดด้านล่าง</div>
+<div class="summary" id="summary">
+กรุณาตรวจสอบข้อมูลพัสดุและกรอกรายละเอียดด้านล่าง
+</div>
 
 <form id="orderForm">
 <h2>1. ข้อมูลผู้ส่ง</h2>
@@ -104,15 +114,50 @@ button:disabled{opacity:.6}
 <label>วันที่ต้องการให้เข้ารับ (ถ้ามี)</label>
 <input name="pickup_date" type="date">
 
-<p class="note">ราคาค่าส่งและการเข้ารับพัสดุจะต้องได้รับการยืนยันจาก ThaiGo ก่อนชำระเงิน การส่งคำขอนี้ยังไม่ใช่การจองรถเข้ารับโดยอัตโนมัติ</p>
+<p class="note">
+ราคาค่าส่งและการเข้ารับพัสดุต้องได้รับการยืนยันจาก ThaiGo ก่อนชำระเงิน
+การส่งคำขอนี้ยังไม่ใช่การจองรถเข้ารับโดยอัตโนมัติ
+</p>
 
 <button id="submitButton" type="submit">ส่งคำขอออเดอร์</button>
-<div id="message" role="status"></div>
+<div id="message" role="status" aria-live="polite"></div>
 </form>
+
+<section id="paymentPanel" aria-live="polite">
+<h2>ชำระเงินออเดอร์ ThaiGo</h2>
+<p>รหัสออเดอร์ของคุณ</p>
+<strong id="paymentOrderId"></strong>
+
+<div id="qrStatus" class="status" style="margin-top:14px">
+กำลังตรวจสอบ QR จากแอดมิน...
+</div>
+
+<div id="qrDetails" style="display:none">
+<p>ยอดชำระตาม QR</p>
+<div class="amount" id="paymentAmount"></div>
+<img id="qrImage" alt="QR สำหรับชำระเงิน ThaiGo">
+<p class="note">
+กรุณาตรวจสอบยอดเงินก่อนชำระ และเก็บหลักฐานการโอนเงินไว้
+</p>
+<p class="note">
+การแสดง QR ไม่ได้ยืนยันว่าชำระเงินแล้ว
+ThaiGo จะตรวจสอบการชำระเงินก่อนเปลี่ยนสถานะออเดอร์
+</p>
+</div>
+
+<button type="button" id="checkQrButton" class="secondary">
+ตรวจสอบ QR อีกครั้ง
+</button>
+</section>
 </div>
 
 <script>
-const ORDER_API = "https://script.google.com/macros/s/AKfycbzPFGKF_OTnhCgmM4EobmBiJo9qJ2vsJObvIwYHj66adOyGRc3XGDEVkOgfMVI4AO3R/exec";
+const ORDER_API =
+"https://script.google.com/macros/s/AKfycbzPFGKF_OTnhCgmM4EobmBiJo9qJ2vsJObvIwYHj66adOyGRc3XGDEVkOgfMVI4AO3R/exec";
+
+const QR_API =
+"https://script.google.com/macros/s/AKfycbx5Kp6FGWY8BSnxeUDUwgRBoH9lnigRVnEaKvSe2FnFaLiQCe_S6qC_lF1JrKgvy9Q/exec";
+
 const params = new URLSearchParams(location.search);
 
 const countryMap = {
@@ -126,11 +171,15 @@ const countryMap = {
 };
 
 const countryParam = params.get("country");
-const mappedCountry = countryMap[(countryParam || "").toLowerCase()] || countryParam || "";
+const mappedCountry =
+  countryMap[(countryParam || "").toLowerCase()] ||
+  countryParam || "";
 
 if (mappedCountry) {
   const select = document.getElementById("receiverCountry");
-  const match = [...select.options].find(o => o.value.toLowerCase() === mappedCountry.toLowerCase());
+  const match = [...select.options].find(
+    o => o.value.toLowerCase() === mappedCountry.toLowerCase()
+  );
   if (match) select.value = match.value;
 }
 
@@ -148,17 +197,137 @@ document.getElementById("summary").textContent =
   "ประเทศปลายทาง: " + (mappedCountry || "กรุณาเลือกประเทศ") +
   " · น้ำหนัก: " + (params.get("weight") || "ยังไม่ระบุ") + " กก.";
 
-document.getElementById("orderForm").addEventListener("submit", async function(e) {
+const form = document.getElementById("orderForm");
+const button = document.getElementById("submitButton");
+const message = document.getElementById("message");
+const paymentPanel = document.getElementById("paymentPanel");
+const qrStatus = document.getElementById("qrStatus");
+const qrDetails = document.getElementById("qrDetails");
+const qrImage = document.getElementById("qrImage");
+const checkQrButton = document.getElementById("checkQrButton");
+
+let currentOrderId = "";
+let currentAccessToken = "";
+let pollTimer = null;
+let pollCount = 0;
+const MAX_POLLS = 120; // ตรวจทุก 5 วินาที สูงสุดประมาณ 10 นาที
+
+function setQrStatus(text, type) {
+  qrStatus.textContent = text;
+  qrStatus.className = "status" + (type ? " " + type : "");
+}
+
+function showPaymentPanel(orderId, token) {
+  currentOrderId = orderId;
+  currentAccessToken = token;
+  pollCount = 0;
+
+  document.getElementById("paymentOrderId").textContent = orderId;
+  paymentPanel.style.display = "block";
+  qrDetails.style.display = "none";
+  qrImage.style.display = "none";
+  setQrStatus("บันทึกออเดอร์แล้ว กำลังรอ QR จากแอดมินค่ะ", "");
+  checkQrButton.disabled = false;
+
+  paymentPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  stopPolling();
+  checkQr();
+  pollTimer = setInterval(() => {
+    if (pollCount >= MAX_POLLS) {
+      stopPolling();
+      setQrStatus(
+        "ยังไม่พบ QR ค่ะ กรุณารอแอดมินอัปโหลด แล้วกด “ตรวจสอบ QR อีกครั้ง”",
+        ""
+      );
+      return;
+    }
+    checkQr();
+  }, 5000);
+}
+
+function stopPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+}
+
+async function checkQr() {
+  if (!currentOrderId || !currentAccessToken) return;
+
+  pollCount++;
+  checkQrButton.disabled = true;
+
+  try {
+    const url = QR_API +
+      "?order_id=" + encodeURIComponent(currentOrderId) +
+      "&access_token=" + encodeURIComponent(currentAccessToken);
+
+    const response = await fetch(url, { method: "GET" });
+    if (!response.ok) throw new Error("ไม่สามารถติดต่อระบบ QR ได้");
+
+    const result = await response.json();
+
+    if (!result.success) {
+      stopPolling();
+      setQrStatus(
+        result.message || "ตรวจสอบสิทธิ์เข้าถึง QR ไม่สำเร็จ",
+        "error"
+      );
+      return;
+    }
+
+    if (!result.found) {
+      setQrStatus(
+        result.message || "กำลังรอ QR จากแอดมินค่ะ",
+        ""
+      );
+      return;
+    }
+
+    if (!result.qr_data_url || !result.amount) {
+      setQrStatus("ข้อมูล QR ไม่ครบ กรุณาติดต่อแอดมิน", "error");
+      return;
+    }
+
+    qrImage.src = result.qr_data_url;
+    qrImage.style.display = "block";
+    qrDetails.style.display = "block";
+
+    document.getElementById("paymentAmount").textContent =
+      Number(result.amount).toLocaleString("th-TH", {
+        maximumFractionDigits: 2
+      }) + " บาท";
+
+    setQrStatus("พบ QR สำหรับออเดอร์นี้แล้วค่ะ", "success");
+    stopPolling();
+
+  } catch (error) {
+    setQrStatus(
+      "ยังเชื่อมต่อระบบ QR ไม่สำเร็จค่ะ กรุณากดตรวจสอบอีกครั้ง\n" +
+      "รายละเอียด: " + error.message,
+      "error"
+    );
+  } finally {
+    checkQrButton.disabled = false;
+  }
+}
+
+checkQrButton.addEventListener("click", () => {
+  pollCount = 0;
+  checkQr();
+});
+
+form.addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const form = e.currentTarget;
-  const button = document.getElementById("submitButton");
-  const message = document.getElementById("message");
   const data = Object.fromEntries(new FormData(form).entries());
 
   data.country = data.receiver_country;
   data.weight = Number(data.weight);
-  data.shipping_price = data.shipping_price === "" ? "" : Number(data.shipping_price);
+  data.shipping_price =
+    data.shipping_price === "" ? "" : Number(data.shipping_price);
 
   if (!data.receiver_country) {
     message.textContent = "กรุณาเลือกประเทศปลายทาง";
@@ -182,13 +351,25 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
       throw new Error(result.error || "ไม่สามารถบันทึกออเดอร์ได้");
     }
 
+    if (!result.order_id || !result.access_token) {
+      throw new Error(
+        "ระบบบันทึกออเดอร์แล้ว แต่ยังไม่ได้รับรหัสเข้าถึง QR กรุณาติดต่อแอดมิน"
+      );
+    }
+
     message.textContent =
-      "ส่งคำขอเรียบร้อยแล้วค่ะ\nรหัสออเดอร์: " + result.order_id +
-      "\nกรุณาติดต่อ ThaiGo เพื่อยืนยันราคาและวิธีชำระเงิน\nLINE: @710rkcan";
-    form.reset();
+      "ส่งคำขอเรียบร้อยแล้วค่ะ\n" +
+      "รหัสออเดอร์: " + result.order_id + "\n" +
+      "ระบบจะแสดง QR ที่นี่เมื่อแอดมินอัปโหลดแล้วค่ะ";
+
+    showPaymentPanel(result.order_id, result.access_token);
+
   } catch (err) {
     message.textContent =
-      "ยังส่งข้อมูลไม่สำเร็จค่ะ กรุณาติดต่อแอดมินทาง LINE @710rkcan\nรายละเอียด: " + err.message;
+      "ไม่สามารถยืนยันผลการส่งคำขอได้ค่ะ\n" +
+      "กรุณาตรวจสอบ Google Sheets ก่อนส่งซ้ำ เพื่อป้องกันออเดอร์ซ้ำ\n" +
+      "รายละเอียด: " + err.message +
+      "\nหากต้องการความช่วยเหลือ ติดต่อ LINE @710rkcan";
   } finally {
     button.disabled = false;
     button.textContent = "ส่งคำขอออเดอร์";
