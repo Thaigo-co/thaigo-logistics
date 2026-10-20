@@ -129,7 +129,7 @@ button:disabled{opacity:.6;cursor:wait}
 <strong id="paymentOrderId"></strong>
 
 <div id="qrStatus" class="status" style="margin-top:14px">
-กำลังตรวจสอบ QR จากแอดมิน...
+กำลังตรวจสอบ QR ในระบบ กรุณารอสักครู่...
 </div>
 
 <div id="qrDetails" style="display:none">
@@ -237,7 +237,7 @@ function showPaymentPanel(orderId, token) {
     if (pollCount >= MAX_POLLS) {
       stopPolling();
       setQrStatus(
-        "ยังไม่พบ QR ค่ะ กรุณารอแอดมินอัปโหลด แล้วกด “ตรวจสอบ QR อีกครั้ง”",
+        "ยังไม่พบ QR ในระบบค่ะ กรุณารอสักครู่ แล้วกด “ตรวจสอบ QR อีกครั้ง”",
         ""
       );
       return;
@@ -280,7 +280,7 @@ async function checkQr() {
 
     if (!result.found) {
       setQrStatus(
-        result.message || "กำลังรอ QR ในระบบกรุณารอสักครู่ค่ะ",
+        result.message || "กำลังรอ QR ในระบบ กรุณารอสักครู่ค่ะ",
         ""
       );
       return;
