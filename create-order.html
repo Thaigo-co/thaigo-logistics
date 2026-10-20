@@ -158,6 +158,8 @@ const ORDER_API =
 const QR_API =
   "https://script.google.com/macros/s/AKfycbx5Kp6FGWY8BSnxeUDUwgRBoH9lnigRVnEaKvSe2FnFaLiQCe_S6qC_lF1JrKgvy9Q/exec";
 
+const WAIT_QR_MESSAGE = "กำลังรอ QR ในระบบ กรุณารอสักครู่ค่ะ";
+
 const params = new URLSearchParams(location.search);
 
 const countryMap = {
@@ -210,6 +212,7 @@ let currentOrderId = "";
 let currentAccessToken = "";
 let pollTimer = null;
 let pollCount = 0;
+let checkingQr = false;
 const MAX_POLLS = 120;
 
 function setQrStatus(text, type) {
@@ -226,20 +229,18 @@ function showPaymentPanel(orderId, token) {
   paymentPanel.style.display = "block";
   qrDetails.style.display = "none";
   qrImage.style.display = "none";
-  setQrStatus("บันทึกออเดอร์แล้ว กำลังรอ QR ในระบบ กรุณารอสักครู่ค่ะ", "");
+  setQrStatus(WAIT_QR_MESSAGE, "");
   checkQrButton.disabled = false;
 
   paymentPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 
   stopPolling();
   checkQr();
+
   pollTimer = setInterval(() => {
     if (pollCount >= MAX_POLLS) {
       stopPolling();
-      setQrStatus(
-        "ยังไม่พบ QR ในระบบค่ะ กรุณารอสักครู่ แล้วกด “ตรวจสอบ QR อีกครั้ง”",
-        ""
-      );
+      setQrStatus(WAIT_QR_MESSAGE, "");
       return;
     }
     checkQr();
@@ -254,8 +255,9 @@ function stopPolling() {
 }
 
 async function checkQr() {
-  if (!currentOrderId || !currentAccessToken) return;
+  if (!currentOrderId || !currentAccessToken || checkingQr) return;
 
+  checkingQr = true;
   pollCount++;
   checkQrButton.disabled = true;
 
@@ -279,10 +281,9 @@ async function checkQr() {
     }
 
     if (!result.found) {
-      setQrStatus(
-        result.message || "กำลังรอ QR ในระบบ กรุณารอสักครู่ค่ะ",
-        ""
-      );
+      // ไม่ใช้ข้อความ message จาก API ในสถานะรอ QR
+      // เพื่อป้องกันข้อความเก่าจากระบบแสดงขึ้นมา
+      setQrStatus(WAIT_QR_MESSAGE, "");
       return;
     }
 
@@ -310,6 +311,7 @@ async function checkQr() {
       "error"
     );
   } finally {
+    checkingQr = false;
     checkQrButton.disabled = false;
   }
 }
