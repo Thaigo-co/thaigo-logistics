@@ -4,151 +4,563 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>สั่งส่งพัสดุ | ThaiGo Air Express</title>
+<title>ส่งพัสดุ | ThaiGo Air Express</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
+:root{
+  --blue:#1e3a8a;
+  --blue-dark:#17316f;
+  --blue-light:#eff6ff;
+  --border:#dbe3ef;
+  --text:#172033;
+  --muted:#64748b;
+  --green:#166534;
+  --green-bg:#dcfce7;
+  --yellow:#92400e;
+  --yellow-bg:#fef3c7;
+  --red:#991b1b;
+  --red-bg:#fee2e2;
+}
 *{box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#0f2a4a;margin:0;padding:18px;color:#172033}
-.container{max-width:600px;margin:auto;background:white;border-radius:16px;padding:22px}
-h1{text-align:center;color:#1e3a8a;margin:0}
-.subtitle{text-align:center;color:#b28b37;margin:4px 0 22px}
-h2{font-size:18px;margin-top:24px;border-bottom:1px solid #ddd;padding-bottom:8px}
-label{display:block;font-size:14px;margin-top:12px}
-input,select,textarea{width:100%;padding:12px;margin-top:5px;border:1px solid #cbd5e1;border-radius:7px;font:inherit}
-textarea{min-height:90px;resize:vertical}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.summary{background:#eef4ff;padding:14px;border-radius:9px;line-height:1.8}
-button{width:100%;padding:14px;border:0;border-radius:8px;background:#1e3a8a;color:white;font-size:16px;margin-top:18px;cursor:pointer}
+body{
+  font-family:"Noto Sans Thai",Tahoma,sans-serif;
+  background:#eef3fa;
+  margin:0;
+  padding:28px 14px;
+  color:var(--text);
+  font-size:15px;
+  line-height:1.7;
+}
+.container{
+  max-width:720px;
+  margin:0 auto;
+  background:#fff;
+  border:1px solid #e5eaf2;
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 8px 30px rgba(15,42,74,.08);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+.brand-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:52px;
+  height:52px;
+  border-radius:14px;
+  background:var(--blue);
+  color:white;
+  font-size:25px;
+  font-weight:700;
+}
+h1{
+  color:var(--blue);
+  margin:0;
+  font-size:30px;
+  line-height:1.3;
+  font-weight:700;
+}
+.subtitle{
+  color:#64748b;
+  font-size:13px;
+  margin-top:3px;
+}
+.intro{
+  background:var(--blue-light);
+  border:1px solid #dbeafe;
+  padding:14px 16px;
+  border-radius:12px;
+  color:#1e40af;
+  margin-bottom:24px;
+}
+.steps{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin:0 0 24px;
+}
+.step{
+  padding:10px 6px;
+  border-radius:10px;
+  background:#f1f5f9;
+  color:#475569;
+  text-align:center;
+  font-size:13px;
+  font-weight:600;
+}
+.step-number{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  background:#dbeafe;
+  color:var(--blue);
+  margin-right:5px;
+  font-size:12px;
+}
+.section{
+  margin-top:25px;
+  padding-top:20px;
+  border-top:1px solid #e8edf4;
+}
+.section:first-of-type{
+  margin-top:0;
+  padding-top:0;
+  border-top:0;
+}
+h2{
+  font-size:18px;
+  color:#1e293b;
+  margin:0 0 14px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.section-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  background:#dbeafe;
+  color:var(--blue);
+  font-size:17px;
+  flex-shrink:0;
+}
+.field{
+  margin-bottom:15px;
+}
+label{
+  display:block;
+  font-size:14px;
+  font-weight:600;
+  color:#334155;
+  margin-bottom:6px;
+}
+.required{color:#dc2626}
+input,select,textarea{
+  width:100%;
+  padding:12px 13px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  background:#fff;
+  color:#172033;
+  font:inherit;
+  font-size:14px;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+input,select{min-height:47px}
+textarea{
+  min-height:94px;
+  resize:vertical;
+}
+input::placeholder,textarea::placeholder{
+  color:#94a3b8;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,.13);
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.dimensions{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+.summary{
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  border-radius:10px;
+  padding:12px 14px;
+  line-height:1.8;
+  font-size:14px;
+  color:#475569;
+  margin-bottom:20px;
+}
+.note{
+  font-size:12px;
+  color:#64748b;
+  line-height:1.8;
+  margin:10px 0;
+}
+.notice{
+  padding:13px 14px;
+  border-radius:10px;
+  background:#fffbeb;
+  border:1px solid #fde68a;
+  color:#92400e;
+  font-size:13px;
+  line-height:1.8;
+  margin-top:14px;
+}
+button{
+  width:100%;
+  padding:14px 18px;
+  border:0;
+  border-radius:10px;
+  background:var(--blue);
+  color:white;
+  font-family:inherit;
+  font-size:16px;
+  font-weight:700;
+  margin-top:16px;
+  cursor:pointer;
+  transition:background .15s,transform .15s;
+}
+button:hover:not(:disabled){background:var(--blue-dark)}
+button:active:not(:disabled){transform:scale(.99)}
 button:disabled{opacity:.6;cursor:wait}
-.note{font-size:12px;color:#64748b;line-height:1.6}
-#message{margin-top:14px;white-space:pre-wrap;line-height:1.7}
-#paymentPanel{display:none;margin-top:22px;padding:18px;border:2px solid #dbeafe;border-radius:12px;text-align:center}
-#paymentPanel h2{margin-top:0;color:#1e3a8a}
-#qrImage{display:none;width:100%;max-width:320px;height:auto;margin:16px auto;border:1px solid #e2e8f0;border-radius:8px}
-.amount{font-size:28px;font-weight:bold;color:#1e3a8a;margin:10px 0}
-.status{background:#f1f5f9;border-radius:8px;padding:12px;line-height:1.7;white-space:pre-wrap}
-.success{background:#ecfdf5;color:#166534}
-.error{background:#fef2f2;color:#991b1b}
-.secondary{background:#64748b}
-@media(max-width:420px){.grid{grid-template-columns:1fr}.container{padding:16px}}
+.secondary{
+  background:#e2e8f0;
+  color:#334155;
+}
+.secondary:hover:not(:disabled){background:#cbd5e1;color:#172033}
+#message{
+  margin-top:14px;
+  padding:0;
+  white-space:pre-wrap;
+  line-height:1.8;
+  font-size:14px;
+}
+#message:not(:empty){
+  padding:13px;
+  border-radius:10px;
+  background:#f1f5f9;
+}
+#paymentPanel{
+  display:none;
+  margin-top:26px;
+  padding:22px;
+  border:1px solid #bfdbfe;
+  border-radius:15px;
+  background:#fff;
+}
+.payment-heading{
+  text-align:center;
+  padding-bottom:16px;
+  border-bottom:1px solid #e2e8f0;
+  margin-bottom:18px;
+}
+.payment-heading h2{
+  justify-content:center;
+  color:var(--blue);
+  margin:0 0 5px;
+}
+.payment-heading p{
+  color:#64748b;
+  margin:0;
+  font-size:13px;
+}
+.order-label{
+  font-size:13px;
+  color:#64748b;
+  text-align:center;
+  margin-bottom:5px;
+}
+.order-number{
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+  color:var(--blue);
+  overflow-wrap:anywhere;
+}
+.status{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  background:var(--yellow-bg);
+  color:var(--yellow);
+  border:1px solid #fde68a;
+  border-radius:10px;
+  padding:13px 14px;
+  line-height:1.8;
+  font-size:14px;
+  white-space:pre-wrap;
+}
+.status::before{
+  content:"●";
+  font-size:12px;
+  line-height:2;
+  flex-shrink:0;
+}
+.status.success{
+  background:var(--green-bg);
+  color:var(--green);
+  border-color:#bbf7d0;
+}
+.status.error{
+  background:var(--red-bg);
+  color:var(--red);
+  border-color:#fecaca;
+}
+.status.info{
+  background:var(--blue-light);
+  color:#1e40af;
+  border-color:#bfdbfe;
+}
+#qrImage{
+  display:none;
+  width:100%;
+  max-width:320px;
+  height:auto;
+  margin:16px auto;
+  border:1px solid #e2e8f0;
+  border-radius:10px;
+  background:#fff;
+}
+.amount{
+  font-size:29px;
+  font-weight:700;
+  color:var(--blue);
+  text-align:center;
+  margin:6px 0 14px;
+}
+.payment-note{
+  font-size:12px;
+  color:#64748b;
+  line-height:1.8;
+  text-align:center;
+}
+.footer{
+  text-align:center;
+  color:#94a3b8;
+  font-size:12px;
+  margin-top:24px;
+}
+@media(max-width:520px){
+  body{padding:12px 9px}
+  .container{padding:18px 15px;border-radius:14px}
+  h1{font-size:26px}
+  .subtitle{font-size:12px}
+  .grid{grid-template-columns:1fr;gap:0}
+  .dimensions{gap:7px}
+  .dimensions input{padding:10px 7px;font-size:13px}
+  .steps{gap:6px}
+  .step{font-size:11px;padding:9px 3px}
+  .step-number{display:flex;margin:0 auto 4px}
+  h2{font-size:16px}
+  #paymentPanel{padding:16px}
+  .order-number{font-size:18px}
+}
 </style>
 </head>
+
 <body>
 <div class="container">
-<h1>ThaiGo</h1>
-<div class="subtitle">AIR EXPRESS · แบบฟอร์มสั่งส่งพัสดุ</div>
 
-<div class="summary" id="summary">
-กรุณาตรวจสอบข้อมูลพัสดุและกรอกรายละเอียดด้านล่าง
-</div>
+  <header class="brand">
+    <div class="brand-icon">T</div>
+    <div>
+      <h1>ThaiGo</h1>
+      <div class="subtitle">AIR EXPRESS · ส่งพัสดุระหว่างประเทศ</div>
+    </div>
+  </header>
 
-<form id="orderForm">
-<h2>1. ข้อมูลผู้ส่ง</h2>
-<label>ชื่อ-นามสกุลผู้ส่ง *</label>
-<input name="customer_name" required autocomplete="name">
+  <div class="intro">
+    ยินดีต้อนรับสู่ ThaiGo กรุณากรอกข้อมูลให้ครบถ้วน
+    เพื่อให้เราตรวจสอบราคาและดำเนินการจัดส่งให้คุณ
+  </div>
 
-<label>เบอร์โทรศัพท์ผู้ส่ง *</label>
-<input name="phone" type="tel" required autocomplete="tel">
+  <div class="steps">
+    <div class="step"><span class="step-number">1</span>ข้อมูลผู้ส่ง</div>
+    <div class="step"><span class="step-number">2</span>ข้อมูลผู้รับ</div>
+    <div class="step"><span class="step-number">3</span>รายละเอียดพัสดุ</div>
+  </div>
 
-<label>ประเทศที่อยู่ผู้ส่ง *</label>
-<input name="sender_country" value="Thailand" required>
+  <div class="summary" id="summary">
+    กรุณาตรวจสอบประเทศปลายทางและน้ำหนักพัสดุ
+  </div>
 
-<label>ที่อยู่ผู้ส่งโดยละเอียด *</label>
-<textarea name="sender_address" placeholder="บ้านเลขที่ ถนน ตำบล/เขต จังหวัด รหัสไปรษณีย์" required></textarea>
+  <form id="orderForm">
 
-<h2>2. ข้อมูลผู้รับ</h2>
-<label>ชื่อ-นามสกุลผู้รับ *</label>
-<input name="receiver_name" required>
+    <section class="section">
+      <h2><span class="section-icon">♙</span>ข้อมูลผู้ส่ง</h2>
 
-<label>เบอร์โทรศัพท์ผู้รับ *</label>
-<input name="receiver_phone" type="tel" required>
+      <div class="field">
+        <label>ชื่อ-นามสกุลผู้ส่ง <span class="required">*</span></label>
+        <input name="customer_name" required autocomplete="name"
+          placeholder="กรอกชื่อและนามสกุล">
+      </div>
 
-<label>ประเทศปลายทาง *</label>
-<select name="receiver_country" id="receiverCountry" required>
-<option value="">เลือกประเทศ</option>
-<option value="USA">สหรัฐอเมริกา</option>
-<option value="Australia">ออสเตรเลีย</option>
-<option value="Canada">แคนาดา</option>
-<option value="Hong Kong">ฮ่องกง</option>
-<option value="New Zealand">นิวซีแลนด์</option>
-<option value="Singapore">สิงคโปร์</option>
-<option value="Taiwan">ไต้หวัน</option>
-</select>
+      <div class="field">
+        <label>เบอร์โทรศัพท์ผู้ส่ง <span class="required">*</span></label>
+        <input name="phone" type="tel" required autocomplete="tel"
+          placeholder="กรอกเบอร์โทรศัพท์ที่ติดต่อได้">
+      </div>
 
-<label>ที่อยู่ผู้รับโดยละเอียด *</label>
-<textarea name="receiver_address" placeholder="บ้านเลขที่ ถนน เมือง/รัฐ จังหวัด และรหัสไปรษณีย์" required></textarea>
+      <div class="field">
+        <label>ประเทศที่อยู่ผู้ส่ง <span class="required">*</span></label>
+        <input name="sender_country" value="Thailand" required>
+      </div>
 
-<h2>3. รายละเอียดพัสดุ</h2>
-<div class="grid">
-<div>
-<label>น้ำหนัก (กก.) *</label>
-<input name="weight" id="weight" type="number" min="0.1" step="0.1" required>
-</div>
-<div>
-<label>ราคาค่าส่ง (บาท)</label>
-<input name="shipping_price" id="shippingPrice" type="number" min="0" step="0.01" placeholder="รอยืนยันราคา">
-</div>
-</div>
+      <div class="field">
+        <label>ที่อยู่ผู้ส่งโดยละเอียด <span class="required">*</span></label>
+        <textarea name="sender_address" required
+          placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์"></textarea>
+      </div>
+    </section>
 
-<div class="grid">
-<div><label>ยาว (ซม.)</label><input name="length_cm" type="number" min="0" step="0.1"></div>
-<div><label>กว้าง (ซม.)</label><input name="width_cm" type="number" min="0" step="0.1"></div>
-<div><label>สูง (ซม.)</label><input name="height_cm" type="number" min="0" step="0.1"></div>
-</div>
+    <section class="section">
+      <h2><span class="section-icon">⌖</span>ข้อมูลผู้รับ</h2>
 
-<label>บริการขนส่ง</label>
-<select name="service" id="service">
-<option value="normal">เรทปกติ</option>
-<option value="express">เรทด่วน</option>
-</select>
+      <div class="field">
+        <label>ชื่อ-นามสกุลผู้รับ <span class="required">*</span></label>
+        <input name="receiver_name" required
+          placeholder="กรอกชื่อผู้รับตามที่อยู่ปลายทาง">
+      </div>
 
-<h2>4. วิธีส่งพัสดุให้ ThaiGo</h2>
-<label>เลือกวิธีส่ง *</label>
-<select name="pickup_method" id="pickupMethod" required>
-<option value="ส่งพัสดุเอง">นำส่งตามที่แอดมินแจ้ง</option>
-<option value="ขอเข้ารับพัสดุ">ขอสอบถามบริการเข้ารับพัสดุ</option>
-</select>
+      <div class="field">
+        <label>เบอร์โทรศัพท์ผู้รับ <span class="required">*</span></label>
+        <input name="receiver_phone" type="tel" required
+          placeholder="กรอกเบอร์โทรศัพท์ผู้รับ">
+      </div>
 
-<label>ที่อยู่รับพัสดุ (กรณีขอเข้ารับ)</label>
-<textarea name="pickup_address" placeholder="กรอกที่อยู่ที่ต้องการให้เข้ารับ หากเลือกบริการเข้ารับ"></textarea>
+      <div class="field">
+        <label>ประเทศปลายทาง <span class="required">*</span></label>
+        <select name="receiver_country" id="receiverCountry" required>
+          <option value="">เลือกประเทศปลายทาง</option>
+          <option value="USA">สหรัฐอเมริกา (USA)</option>
+          <option value="Australia">ออสเตรเลีย (Australia)</option>
+          <option value="Canada">แคนาดา (Canada)</option>
+          <option value="Hong Kong">ฮ่องกง (Hong Kong)</option>
+          <option value="New Zealand">นิวซีแลนด์ (New Zealand)</option>
+          <option value="Singapore">สิงคโปร์ (Singapore)</option>
+          <option value="Taiwan">ไต้หวัน (Taiwan)</option>
+        </select>
+      </div>
 
-<label>วันที่ต้องการให้เข้ารับ (ถ้ามี)</label>
-<input name="pickup_date" type="date">
+      <div class="field">
+        <label>ที่อยู่ผู้รับโดยละเอียด <span class="required">*</span></label>
+        <textarea name="receiver_address" required
+          placeholder="บ้านเลขที่ ถนน เมือง รัฐ/จังหวัด และรหัสไปรษณีย์"></textarea>
+      </div>
+    </section>
 
-<p class="note">
-ราคาค่าส่งและการเข้ารับพัสดุต้องได้รับการยืนยันจาก ThaiGo ก่อนชำระเงิน
-การส่งคำขอนี้ยังไม่ใช่การจองรถเข้ารับโดยอัตโนมัติ
-</p>
+    <section class="section">
+      <h2><span class="section-icon">▣</span>รายละเอียดพัสดุ</h2>
 
-<button id="submitButton" type="submit">ส่งคำขอออเดอร์</button>
-<div id="message" role="status" aria-live="polite"></div>
-</form>
+      <div class="grid">
+        <div class="field">
+          <label>น้ำหนัก (กก.) <span class="required">*</span></label>
+          <input name="weight" id="weight" type="number"
+            min="0.1" step="0.1" required placeholder="เช่น 2.5">
+        </div>
 
-<section id="paymentPanel" aria-live="polite">
-<h2>ชำระเงินออเดอร์ ThaiGo</h2>
-<p>รหัสออเดอร์ของคุณ</p>
-<strong id="paymentOrderId"></strong>
+        <div class="field">
+          <label>ราคาค่าส่ง (บาท)</label>
+          <input name="shipping_price" id="shippingPrice" type="number"
+            min="0" step="0.01" placeholder="รอยืนยันราคา">
+        </div>
+      </div>
 
-<div id="qrStatus" class="status" style="margin-top:14px">
-กำลังตรวจสอบ QR ในระบบ กรุณารอสักครู่...
-</div>
+      <label>ขนาดพัสดุ (เซนติเมตร)</label>
+      <div class="dimensions">
+        <div class="field">
+          <input name="length_cm" type="number" min="0" step="0.1"
+            aria-label="ความยาวเซนติเมตร" placeholder="ยาว">
+        </div>
+        <div class="field">
+          <input name="width_cm" type="number" min="0" step="0.1"
+            aria-label="ความกว้างเซนติเมตร" placeholder="กว้าง">
+        </div>
+        <div class="field">
+          <input name="height_cm" type="number" min="0" step="0.1"
+            aria-label="ความสูงเซนติเมตร" placeholder="สูง">
+        </div>
+      </div>
 
-<div id="qrDetails" style="display:none">
-<p>ยอดชำระตาม QR</p>
-<div class="amount" id="paymentAmount"></div>
-<img id="qrImage" alt="QR สำหรับชำระเงิน ThaiGo">
-<p class="note">
-กรุณาตรวจสอบยอดเงินก่อนชำระ และเก็บหลักฐานการโอนเงินไว้
-</p>
-<p class="note">
-การแสดง QR ไม่ได้ยืนยันว่าชำระเงินแล้ว
-ThaiGo จะตรวจสอบการชำระเงินก่อนเปลี่ยนสถานะออเดอร์
-</p>
-</div>
+      <div class="field">
+        <label>บริการขนส่ง</label>
+        <select name="service" id="service">
+          <option value="normal">เรทปกติ</option>
+          <option value="express">เรทด่วน</option>
+        </select>
+      </div>
+    </section>
 
-<button type="button" id="checkQrButton" class="secondary">
-ตรวจสอบ QR อีกครั้ง
-</button>
-</section>
+    <section class="section">
+      <h2><span class="section-icon">⇧</span>วิธีส่งพัสดุให้ ThaiGo</h2>
+
+      <div class="field">
+        <label>เลือกวิธีส่งพัสดุ <span class="required">*</span></label>
+        <select name="pickup_method" id="pickupMethod" required>
+          <option value="ส่งพัสดุเอง">นำส่งตามที่แอดมินแจ้ง</option>
+          <option value="ขอเข้ารับพัสดุ">ขอสอบถามบริการเข้ารับพัสดุ</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>ที่อยู่รับพัสดุ (กรณีขอเข้ารับ)</label>
+        <textarea name="pickup_address"
+          placeholder="กรอกที่อยู่ที่ต้องการให้เข้ารับ หากเลือกบริการเข้ารับ"></textarea>
+      </div>
+
+      <div class="field">
+        <label>วันที่ต้องการให้เข้ารับ (ถ้ามี)</label>
+        <input name="pickup_date" type="date">
+      </div>
+
+      <div class="notice">
+        <strong>โปรดทราบ</strong><br>
+        ราคาค่าส่งและการเข้ารับพัสดุต้องได้รับการยืนยันจาก ThaiGo ก่อนชำระเงิน
+        การส่งคำขอนี้ยังไม่ใช่การจองรถเข้ารับโดยอัตโนมัติ
+      </div>
+    </section>
+
+    <button id="submitButton" type="submit">ส่งคำขอออเดอร์</button>
+    <div id="message" role="status" aria-live="polite"></div>
+  </form>
+
+  <section id="paymentPanel" aria-live="polite">
+    <div class="payment-heading">
+      <h2>ชำระเงินออเดอร์ ThaiGo</h2>
+      <p>ตรวจสอบรหัสออเดอร์และ QR ก่อนชำระเงิน</p>
+    </div>
+
+    <div class="order-label">รหัสออเดอร์ของคุณ</div>
+    <div class="order-number" id="paymentOrderId"></div>
+
+    <div id="qrStatus" class="status" style="margin-top:18px">
+      กำลังรอ QR ในระบบ กรุณารอสักครู่ค่ะ
+    </div>
+
+    <div id="qrDetails" style="display:none">
+      <p class="order-label" style="margin-top:20px">ยอดชำระตาม QR</p>
+      <div class="amount" id="paymentAmount"></div>
+      <img id="qrImage" alt="QR สำหรับชำระเงิน ThaiGo">
+      <p class="payment-note">
+        กรุณาตรวจสอบยอดเงินก่อนชำระ และเก็บหลักฐานการโอนเงินไว้
+      </p>
+      <p class="payment-note">
+        การแสดง QR ไม่ได้ยืนยันว่าชำระเงินแล้ว
+        ThaiGo จะตรวจสอบการชำระเงินก่อนเปลี่ยนสถานะออเดอร์
+      </p>
+    </div>
+
+    <button type="button" id="checkQrButton" class="secondary">
+      ตรวจสอบ QR อีกครั้ง
+    </button>
+  </section>
+
+  <div class="footer">ThaiGo Air Express · ขอบคุณที่ใช้บริการ</div>
 </div>
 
 <script>
@@ -281,8 +693,6 @@ async function checkQr() {
     }
 
     if (!result.found) {
-      // ไม่ใช้ข้อความ message จาก API ในสถานะรอ QR
-      // เพื่อป้องกันข้อความเก่าจากระบบแสดงขึ้นมา
       setQrStatus(WAIT_QR_MESSAGE, "");
       return;
     }
