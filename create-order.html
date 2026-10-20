@@ -153,10 +153,10 @@ ThaiGo จะตรวจสอบการชำระเงินก่อน�
 
 <script>
 const ORDER_API =
-https://script.google.com/macros/s/AKfycbwyjrVQ1G8qA6kS6aNPm4AZRTNQWOxu6BlhmrVlqlm7nO_NiaJS_MxwFZhgr1XASVqV/exec
+  "https://script.google.com/macros/s/AKfycbwyjrVQ1G8qA6kS6aNPm4AZRTNQWOxu6BlhmrVlqlm7nO_NiaJS_MxwFZhgr1XASVqV/exec";
 
 const QR_API =
-"https://script.google.com/macros/s/AKfycbx5Kp6FGWY8BSnxeUDUwgRBoH9lnigRVnEaKvSe2FnFaLiQCe_S6qC_lF1JrKgvy9Q/exec";
+  "https://script.google.com/macros/s/AKfycbx5Kp6FGWY8BSnxeUDUwgRBoH9lnigRVnEaKvSe2FnFaLiQCe_S6qC_lF1JrKgvy9Q/exec";
 
 const params = new URLSearchParams(location.search);
 
@@ -210,7 +210,7 @@ let currentOrderId = "";
 let currentAccessToken = "";
 let pollTimer = null;
 let pollCount = 0;
-const MAX_POLLS = 120; // ตรวจทุก 5 วินาที สูงสุดประมาณ 10 นาที
+const MAX_POLLS = 120;
 
 function setQrStatus(text, type) {
   qrStatus.textContent = text;
